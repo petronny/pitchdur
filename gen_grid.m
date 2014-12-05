@@ -1,12 +1,6 @@
-function gen_grid(filename)
-INF=1000;
-input=fopen(filename,'r');
-text=fgets(input);
-text=fgets(input);
-text=fgets(input);
-while ~feof(input)
-	text=fgets(input);
-	mark=sscanf(text,'%f',[1 1])*100;
-	plot([mark mark],[-INF INF],'--k');
+function gen_grid(marks)
+INF=600;
+for i=1:length(marks)
+	plot([marks(i) marks(i)],[-INF INF],'--k');
 end
 plot([0 INF],[0 0],'--k');

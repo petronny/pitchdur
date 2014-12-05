@@ -1,5 +1,5 @@
 function outlier=find_outlier(x)
-k1 = 4;
+k1 = 2;
 k2 = 1;
 inlier = [];
 outlier = [];

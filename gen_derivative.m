@@ -3,6 +3,7 @@ if nargin<2
 	f=1;
 end
 len=length(a);
+b=zeros(1,len-1);
 for j=1:len-1
 	if a(j)~=0 && a(j+1)~=0
 		b(j)=a(j+1)-a(j);
