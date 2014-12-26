@@ -4,7 +4,7 @@ close all;
 mydir='match/';
 list=dir([mydir,'*.f0_ascii']);
 num=length(list);
-for i=1:1:num
+for i=1:1%:num
 
 	filename=[mydir,list(i).name];
 	fprintf('%d:%s\n',i,filename);

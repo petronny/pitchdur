@@ -1,41 +1,27 @@
-function linearfit(a)
+function [p r]=linearfit(a)
 len=length(a);
-x=[];
-y=[];
-for i=1:len
-	if a(i)==0
-		if length(x)>0
-			xin=x;
-			yin=y;
-			out=[];
-			pout=[1];
-			while length(out)~=length(pout) || max(pout-out)~=0
-				pout=out;
-				out=find_outlier(y-polyval(polyfit(xin,yin,1),x));
-				xin=[];
-				yin=[];
-				for j=1:length(x)
-					if ~any(out==j)
-						xin=[xin x(j)];
-						yin=[yin y(j)];
-					end
-				end
-			end
-			for j=1:length(x)
-				if any(out==j)
-					 plot(x(j),y(j),'o')
-				end
-			end
-			p=polyfit(xin,yin,1);
-			x1=x(1):0.1:x(length(x));
-			y1=polyval(p,x1);
-			plot(x1,y1,'g');
+
+x=linspace(0,len-1,len);
+y=a;
+xin=x;
+yin=y;
+out=[];
+pout=[1];
+count=0;
+while ~(length(out)==0&&length(pout)==0)&&(length(out)~=length(pout) || max(pout-out)~=0) && count<20;
+	count=count+1;
+	pout=out;
+	out=find_outlier(y-polyval(polyfit(xin,yin,1),x));
+	xin=[];
+	yin=[];
+	for j=1:length(x)
+		if ~any(out==j)
+			xin=[xin x(j)];
+			yin=[yin y(j)];
 		end
-		x=[];
-		y=[];
-	end
-	if a(i)~=0 
-		x=[x i];
-		y=[y a(i)];
 	end
 end
+p=polyfit(xin,yin,1);
+
+r=corrcoef(xin,yin);
+r=r(1,2);

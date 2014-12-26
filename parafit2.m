@@ -5,39 +5,11 @@ end
 
 para=[0];
 
-len=0;
-maxlen=0;
-maxleft=0;
-maxright=0;
-for i=1:length(ax)
-	if tmp(i)~=0 && len==0
-		left=i;
-		len=1;
-	end
-	if tmp(i)==0 && len~=0
-		if maxlen<len
-			maxlen=len;
-			maxleft=left;
-			maxright=i-1;
-			len=0;
-		end
-	end
-	if i==length(ax) && len~=0
-		if maxlen<len
-			maxlen=len;
-			maxleft=left;
-			maxright=i;
-			len=0;
-		end
-	end
-	if tmp(i)~=0 && len~=0
-		len=len+1;
-	end
-end
-
-if maxlen<5
+[maxleft maxright]=exact_match(tmp);
+if maxright-maxleft+1<5
 	return
 end
+
 tmp=tmp(maxleft:maxright);
 ax=ax(maxleft:maxright);
 
