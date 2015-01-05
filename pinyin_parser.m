@@ -1,4 +1,4 @@
-function [Initial Vowel tone]=tone_parser(input)
+function [Initial Vowel tone]=pinyin_parser(input)
 tone=input(length(input));
 Initial=sscanf(input,'%[^aoeiuv]');
 Vowel=input(length(Initial)+1:length(input)-1);

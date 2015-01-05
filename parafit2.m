@@ -20,7 +20,7 @@ yin=y;
 out=[];
 pout=[1];
 count=0;
-while (length(out)~=length(pout) || max(pout-out)~=0) && count <20;
+while ~(length(out)==0&&length(pout)==0)&&(length(out)~=length(pout) || max(pout-out)~=0) && count<40;
 	count=count+1;
 	pout=out;
 	out=find_outlier(y-polyval(polyfit(xin,yin,2),x));

@@ -4,7 +4,7 @@ close all;
 mydir='match/';
 list=dir([mydir,'*.f0_ascii']);
 num=length(list);
-for i=1:1%:num
+for i=1:1:num
 
 	filename=[mydir,list(i).name];
 	fprintf('%d:%s\n',i,filename);
@@ -14,7 +14,7 @@ for i=1:1%:num
 
 	h=paper_settings([32 9]);
 	gen_points(a);
-	[breaks marks]=read_lab(regexprep(filename,'f0_ascii','lab'));
+	[breaks marks]=lab_format_parser(regexprep(filename,'f0_ascii','lab'));
 	gen_grid(marks);
 	fit_axis(a);
 
@@ -37,7 +37,7 @@ for i=1:1%:num
 %	end
 
 %	subfix='fourierfit';
-	subfix='polyfit1';
+	subfix='parafit';
 	saveas(h,regexprep(regexprep(filename,'.f0_ascii',['-' subfix]),'match/','figure/'),'png');
 	close(h);
 

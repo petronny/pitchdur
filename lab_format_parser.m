@@ -1,4 +1,4 @@
-function [breaks marks tones]=read_lab(filename)
+function [breaks marks tones]=lab_format_parser(filename)
 input=fopen(filename,'r');
 text=fgets(input);
 text=fgets(input);
