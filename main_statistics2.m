@@ -13,13 +13,13 @@ for i=1:1:num
 	a=fscanf(input,'%f %f %f %f',[4 inf])';
 	a=[a(:,1); zeros(100,1)];
 
-	[breaks marks tones]=read_lab(regexprep(filename,'f0_ascii','lab'));
+	[breaks marks tones]=lab_format_parser(regexprep(filename,'f0_ascii','lab'));
 
 	for j=2:length(marks)-1
 		sound=char(tones(j+1));
 		psound=char(tones(j));
-		[initial vowel tone]=tone_parser(sound);
-		[pinitial pvowel ptone]=tone_parser(psound);
+		[initial vowel tone]=pinyin_parser(sound);
+		[pinitial pvowel ptone]=pinyin_parser(psound);
 		if tone=='1' || tone=='2' || tone=='3' || tone=='4'
 		    if ptone=='1' || ptone=='2' || ptone=='3' || ptone=='4'
 
@@ -32,6 +32,7 @@ for i=1:1:num
                         gen_points(tmp);
 			x=linspace(0,pright-pleft+1,pright-pleft+1);
 			parafit(x,tmp);
+			baseline(x,tmp);
 
 			left=round(marks(j));
 			right=round(marks(j+1));
@@ -39,6 +40,7 @@ for i=1:1:num
                         gen_points([ zeros(1,pright-pleft+1) tmp']);
 			x=linspace(pright-pleft+1,right-pleft+1,right-left+1);
 			parafit(x,tmp);
+			baseline(x,tmp);
 
                         if ~isdir(['statistics/' ptone tone])
                                 mkdir(['statistics/' ptone tone]);
