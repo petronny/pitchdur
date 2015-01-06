@@ -15,8 +15,8 @@ for i=1:length(a)
 			maxlen=len;
 			maxleft=left;
 			maxright=i-1;
-			len=0;
 		end
+		len=0;
 	end
 	if i==length(a) && len~=0
 		if maxlen<len

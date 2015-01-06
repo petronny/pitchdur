@@ -68,7 +68,7 @@ end
 count
 
 len=size(data);
-len=len(1)
+len=len(1);
 for k=1:4
         h=paper_settings([16 9]);
         for j=1:len
