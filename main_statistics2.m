@@ -32,7 +32,7 @@ for i=1:1:num
                         gen_points(tmp);
 			x=linspace(0,pright-pleft+1,pright-pleft+1);
 			p=parafit(x,tmp);
-			base1=baseline(x,tmp,p);
+			[base1,base2]=baseline(x,tmp,p);
 
 			left=round(marks(j));
 			right=round(marks(j+1));
@@ -40,9 +40,9 @@ for i=1:1:num
                         gen_points([ zeros(1,pright-pleft+1) tmp']);
 			x=linspace(pright-pleft+1,right-pleft+1,right-left+1);
 			p=parafit(x,tmp);
-			base2=baseline(x,tmp,p);
+			[base3,base4]=baseline(x,tmp,p);
 
-			data=[data;ptone-'0' tone-'0' base1-base2];
+			data=[data;ptone-'0' tone-'0' base1-base3 base2-base4];
 
                         if ~isdir(['statistics/' ptone tone])
                                 mkdir(['statistics/' ptone tone]);
@@ -65,11 +65,11 @@ for i=1:4
 		for k=1:len
 			if data(k,1)==i && data(k,2)==j
 				count=count+1;
-				d=[d,data(k,3)];
+				%d=[d,data(k,3)];
+				plot(data(k,3),data(k,4),'*');
 			end
 		end
-		d=sort(d);
-		plot(d,'*');
-		saveas(h,['statistics/basediff-max/' i+'0' j+'0' ],'png');
+		%d=sort(d);
+		saveas(h,['statistics/basediff-max-min/' i+'0' j+'0' ],'png');
 	end
 end
