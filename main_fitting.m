@@ -4,7 +4,7 @@ close all;
 mydir='match/';
 list=dir([mydir,'*.f0_ascii']);
 num=length(list);
-for i=1:1%:num
+for i=1:1:num
 
 	filename=[mydir,list(i).name];
 	fprintf('%d:%s\n',i,filename);
@@ -29,7 +29,7 @@ for i=1:1%:num
 		if maxr-maxl+1>5
 			base=baseline(x,tmp,p);
 			ax=x(maxl:maxr);
-			[ptone-'0' tone-'0' basediff(ptone,tone)]
+			%[ptone-'0' tone-'0' basediff(ptone,tone)]
 			ay=ones(1,maxr-maxl+1)*(base+basediff(ptone,tone));
 			plot(ax,ay,'b');
 		end

@@ -61,12 +61,15 @@ for i=1:4
 	for j=1:4
 		h=paper_settings([16 9]);
 		count=0;
+		d=[];
 		for k=1:len
 			if data(k,1)==i && data(k,2)==j
 				count=count+1;
-				plot(count,data(k,3),'*');
+				d=[d,data(k,3)];
 			end
 		end
+		d=sort(d);
+		plot(d,'*');
 		saveas(h,['statistics/basediff/' i+'0' j+'0' ],'png');
 	end
 end
