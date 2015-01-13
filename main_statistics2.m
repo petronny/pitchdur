@@ -70,6 +70,6 @@ for i=1:4
 		end
 		d=sort(d);
 		plot(d,'*');
-		saveas(h,['statistics/basediff/' i+'0' j+'0' ],'png');
+		saveas(h,['statistics/basediff-max/' i+'0' j+'0' ],'png');
 	end
 end

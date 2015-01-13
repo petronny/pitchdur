@@ -15,7 +15,7 @@ ax=ax(maxleft:maxright);
 
 [in_x,in_y]=find_inlier(tmp,p);
 
-base=min(in_y);
+base=max(in_y);
 
 if f==1
 	ay=ones(1,maxright-maxleft+1)*base;
