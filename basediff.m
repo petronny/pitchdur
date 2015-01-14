@@ -6,4 +6,4 @@ if tone=='1' || tone=='2' || tone=='3' || tone=='4'
 		diff=a(ptone-'0',tone-'0');
 	end
 end
-
+input=fopen('parameters/basediff-diagonal.txt','r');

@@ -23,8 +23,8 @@ for i=1:1:num
 		if tone=='1' || tone=='2' || tone=='3' || tone=='4'
 		    if ptone=='1' || ptone=='2' || ptone=='3' || ptone=='4'
 
-                        h=paper_settings([8 4.5]);
-                        axis([0 100 100 400]);
+                        %h=paper_settings([8 4.5]);
+                        %axis([0 100 100 400]);
 
 			pleft=round(marks(j-1));
 			pright=round(marks(j));
@@ -44,11 +44,11 @@ for i=1:1:num
 
 			data=[data;ptone-'0' tone-'0' base1-base3 base2-base4];
 
-                        if ~isdir(['statistics/' ptone tone])
-                                mkdir(['statistics/' ptone tone]);
-                        end
-                        saveas(h,['statistics/' ptone tone '/' psound sound '-' filename(9:11) '-' sprintf('%d',j-1) ],'png');
-                        close(h);
+%                        if ~isdir(['statistics/' ptone tone])
+%                                mkdir(['statistics/' ptone tone]);
+%                        end
+%                        saveas(h,['statistics/' ptone tone '/' psound sound '-' filename(9:11) '-' sprintf('%d',j-1) ],'png');
+%                        close(h);
 		    end
 		end
 	end
@@ -57,6 +57,7 @@ end
 len=size(data);
 len=len(1)
 
+output=fopen('parameters/basediff-diagonal.txt','w');
 for i=1:4
 	for j=1:4
 		h=paper_settings([16 9]);
@@ -65,11 +66,14 @@ for i=1:4
 		for k=1:len
 			if data(k,1)==i && data(k,2)==j
 				count=count+1;
-				%d=[d,data(k,3)];
-				plot(data(k,3),data(k,4),'*');
+				d=[d;data(k,3) data(k,4)];
+				plot(data(k,3),data(k,4),'b*');
 			end
 		end
-		%d=sort(d);
+		plot([min(d(:,1)) max(d(:,1))],[min(d(:,2)) max(d(:,2))],'r');
+		p=polyfit([min(d(:,1)) max(d(:,1))],[min(d(:,2)) max(d(:,2))],1);
+		fprintf(output,'%f %f\n',p(1),p(2));
 		saveas(h,['statistics/basediff-max-min/' i+'0' j+'0' ],'png');
 	end
 end
+fclose(output);

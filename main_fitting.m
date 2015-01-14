@@ -4,7 +4,7 @@ close all;
 mydir='match/';
 list=dir([mydir,'*.f0_ascii']);
 num=length(list);
-for i=1:1:num
+for i=1:1%:num
 
 	filename=[mydir,list(i).name];
 	fprintf('%d:%s\n',i,filename);
@@ -48,7 +48,7 @@ for i=1:1:num
 
 %	subfix='fourierfit';
 	subfix='parafit';
-	saveas(h,regexprep(regexprep(filename,'.f0_ascii',['-' subfix]),'match/','figure/'),'png');
+	saveas(h,regexprep(regexprep(filename,'.f0_ascii',['-' subfix]),'match/',['figure/',subfix,'/']),'png');
 	close(h);
 
 %	h=paper_settings();

@@ -1,7 +1,9 @@
-function [p r]=linearfit(a)
+function [p r]=linearfit(a,x)
 len=length(a);
+if nargin<2
+	x=linspace(0,len-1,len);
+end
 
-x=linspace(0,len-1,len);
 y=a;
 xin=x;
 yin=y;

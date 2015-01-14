@@ -31,3 +31,4 @@ while ~feof(input)
 	marks=[marks mark(1)];
 	pmark=mark(1);
 end
+fclose(input);
