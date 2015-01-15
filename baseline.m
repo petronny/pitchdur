@@ -23,5 +23,5 @@ if f==1
 	ay=ones(1,maxright-maxleft+1)*base1;
 	plot(ax,ay,'r');
 	ay=ones(1,maxright-maxleft+1)*base2;
-	plot(ax,ay,'b');
+	plot(ax,ay,'r');
 end

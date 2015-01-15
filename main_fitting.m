@@ -10,6 +10,7 @@ for i=1:1%:num
 	fprintf('%d:%s\n',i,filename);
 	input=fopen(filename,'r');
 	a=fscanf(input,'%f %f %f %f',[4 inf])';
+	fclose(input);
 	a=[a(:,1); zeros(100,1)];
 
 	h=paper_settings([32 9]);
@@ -18,6 +19,8 @@ for i=1:1%:num
 	gen_grid(marks);
 	fit_axis(a);
 	ptone='0';
+	pbase1=0;
+	pbase2=0;
 	for j=1:length(marks)-1
 		sound=char(tones(j+1));
 		[initial vowel tone]=pinyin_parser(sound);
@@ -27,10 +30,14 @@ for i=1:1%:num
 		x=linspace(left,right,right-left+1);
 		[p r1 r2 maxl maxr]=parafit(x,tmp);
 		if maxr-maxl+1>5
-			base=baseline(x,tmp,p);
+			[base1 base2]=baseline(x,tmp,p);
+			[diff1 diff2]=basediff(ptone,tone,pbase1-base1,pbase2-base2);
+			pbase1=base1;
+			pbase2=base2;
 			ax=x(maxl:maxr);
-			%[ptone-'0' tone-'0' basediff(ptone,tone)]
-			ay=ones(1,maxr-maxl+1)*(base+basediff(ptone,tone));
+			ay=ones(1,maxr-maxl+1)*(base1+diff1);
+			plot(ax,ay,'b');
+			ay=ones(1,maxr-maxl+1)*(base2+diff2);
 			plot(ax,ay,'b');
 		end
 		ptone=tone;

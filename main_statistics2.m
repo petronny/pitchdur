@@ -11,6 +11,7 @@ for i=1:1:num
 	fprintf('%d:%s\n',i,filename);
 	input=fopen(filename,'r');
 	a=fscanf(input,'%f %f %f %f',[4 inf])';
+	fclose(input);
 	a=[a(:,1); zeros(100,1)];
 
 	[breaks marks tones]=lab_format_parser(regexprep(filename,'f0_ascii','lab'));
@@ -41,8 +42,8 @@ for i=1:1:num
 			x=linspace(pright-pleft+1,right-pleft+1,right-left+1);
 			p=parafit(x,tmp);
 			[base3,base4]=baseline(x,tmp,p);
-
-			data=[data;ptone-'0' tone-'0' base1-base3 base2-base4];
+			[diff1 diff2]=basediff(ptone,tone,base1-base3,base2-base4);
+			data=[data;ptone-'0' tone-'0' base1-base3+diff1 base2-base4+diff2];
 
 %                        if ~isdir(['statistics/' ptone tone])
 %                                mkdir(['statistics/' ptone tone]);
@@ -56,6 +57,40 @@ end
 
 len=size(data);
 len=len(1)
+
+for i=1:4
+	for j=1:4
+		h=paper_settings([16 9]);
+		count=0;
+		d=[];
+		for k=1:len
+			if data(k,1)==i && data(k,2)==j
+				count=count+1;
+				d=[d;data(k,3)];
+			end
+		end
+		d=sort(d);
+		plot(d,'b*');
+		saveas(h,['statistics/basediff-min/' i+'0' j+'0' ],'png');
+	end
+end
+
+for i=1:4
+	for j=1:4
+		h=paper_settings([16 9]);
+		count=0;
+		d=[];
+		for k=1:len
+			if data(k,1)==i && data(k,2)==j
+				count=count+1;
+				d=[d;data(k,4)];
+			end
+		end
+		d=sort(d);
+		plot(d,'b*');
+		saveas(h,['statistics/basediff-max/' i+'0' j+'0' ],'png');
+	end
+end
 
 output=fopen('parameters/basediff-diagonal.txt','w');
 for i=1:4
