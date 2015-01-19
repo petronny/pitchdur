@@ -2,4 +2,7 @@ figure/
 match/
 origin/
 statistics/
+windows/*/
+windows/.*
 *.swp
+*.exe
