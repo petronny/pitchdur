@@ -2,7 +2,7 @@
 [ ! -d match/lab ] && mkdir -p match/lab
 [ ! -d match/f0_ascii ] && mkdir -p match/f0_ascii
 rm -f missing-list.txt
-cd orgin
+cd origin
 for i in *.lab
 do
 	j=${i%.lab}.f0_ascii
