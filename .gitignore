@@ -4,5 +4,6 @@ origin/
 statistics/
 windows/*/
 windows/.*
+rebuild/
 *.swp
 *.exe

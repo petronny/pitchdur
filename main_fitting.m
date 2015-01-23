@@ -5,7 +5,7 @@ f0dir='match/f0files/';
 labdir=regexprep(f0dir,'f0files','lab');
 list=dir([f0dir,'*.f0_ascii']);
 num=length(list);
-for i=136:1:num
+for i=1:1%:num
 
 	fprintf('%d:%s\n',i,list(i).name);
 	input=fopen([f0dir list(i).name],'r');
