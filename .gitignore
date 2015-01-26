@@ -2,8 +2,7 @@ figure/
 match/
 origin/
 statistics/
-windows/*/
-windows/.*
+windows/
 rebuild/
 *.swp
 *.exe
