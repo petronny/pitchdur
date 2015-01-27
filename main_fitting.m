@@ -5,7 +5,7 @@ f0dir='match/f0files/';
 labdir=regexprep(f0dir,'f0files','lab');
 list=dir([f0dir,'*.f0_ascii']);
 num=length(list);
-for i=1:1%:num
+for i=1:1:num
 
 	fprintf('%d:%s\n',i,list(i).name);
 	input=fopen([f0dir list(i).name],'r');
@@ -13,7 +13,7 @@ for i=1:1%:num
 	fclose(input);
 
 	h=paper_settings([32 9]);
-	%gen_points(a);
+	gen_points(a);
 	[breaks marks tones]=lab_format_parser([labdir regexprep(list(i).name,'f0_ascii','lab')]);
 	%gen_grid(marks);
 	%fit_axis(a);
@@ -32,9 +32,20 @@ for i=1:1%:num
 			right=right-1;
 		end
 		tmp=a(left:right);
-		b=lowpass(tmp,(breaks(j+1)-breaks(j))/100,left);
-		if max(abs(b))>0
+		[b f]=lowpass(tmp,(breaks(j+1)-breaks(j))/100,left);
+		if f==1
 			plot(linspace(left,right,right-left+1),b);
+
+			p=polyfit(linspace(0,right-left,right-left+1),b,3);
+			y22=polyval(p,linspace(0,right-left+1,right-left+1));
+			plot(linspace(left,right,right-left+1),y22,'r');
+
+			for k=left:right
+				if tmp(k-left+1)~=0
+					plot(k,tmp(k-left+1)-b(k-left+1),'r*');
+					rebuild(k)=tmp(k-left+1)-b(k-left+1)+max(tmp);
+				end
+			end
 		end
 	end
 
