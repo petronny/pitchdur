@@ -3,6 +3,6 @@ match/
 origin/
 statistics/
 windows/
-rebuild/
+rebuild*/
 *.swp
 *.exe

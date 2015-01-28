@@ -36,45 +36,45 @@ for i=1:1:num
 		if f==1
 			plot(linspace(left,right,right-left+1),b);
 
-			p=polyfit(linspace(0,right-left,right-left+1),b,3);
+			p=polyfit(linspace(0,right-left,right-left+1),b,1);
 			y22=polyval(p,linspace(0,right-left+1,right-left+1));
 			plot(linspace(left,right,right-left+1),y22,'r');
 
 			for k=left:right
 				if tmp(k-left+1)~=0
 					plot(k,tmp(k-left+1)-b(k-left+1),'r*');
-					rebuild(k)=tmp(k-left+1)-b(k-left+1)+max(tmp);
+					%rebuild(k)=tmp(k-left+1)-b(k-left+1)+max(tmp);
 				end
 			end
 		end
 	end
 
-       % for j=1:length(marks)-1
-       %         sound=char(tones(j+1));
-       %         [initial vowel tone]=pinyin_parser(sound);
-       %         left=round(marks(j));
-       %         right=min(round(marks(j+1)),length(a));
-       %         tmp=a(left:right);
-       %         x=linspace(left,right,right-left+1);
-       %         [p r1 r2 maxl maxr]=parafit(x,tmp);
-       %         if maxr-maxl+1>5
-       %                 [base1 base2]=baseline(x,tmp,p);
-       %                 [diff1 diff2]=basediff(ptone,tone,pbase1-base1,pbase2-base2);
-       %                 pbase1=base1;
-       %                 pbase2=base2;
-       %                 ax=x(maxl:maxr);
-       %                 ay=ones(1,maxr-maxl+1)*(base1+diff1);
-       %                 %plot(ax,ay,'b');
-       %                 ay=ones(1,maxr-maxl+1)*(base2+diff2);
-       %                 %plot(ax,ay,'b');
+	for j=1:length(marks)-1
+		sound=char(tones(j+1));
+		[initial vowel tone]=pinyin_parser(sound);
+		left=round(marks(j));
+		right=min(round(marks(j+1)),length(a));
+		tmp=a(left:right);
+		x=linspace(left,right,right-left+1);
+		[p r1 r2 maxl maxr]=parafit(x,tmp);
+		if maxr-maxl+1>5
+			[base1 base2]=baseline(x,tmp,p,0);
+			[diff1 diff2]=basediff(ptone,tone,pbase1-base1,pbase2-base2);
+			pbase1=base1;
+			pbase2=base2;
+			ax=x(maxl:maxr);
+			ay=ones(1,maxr-maxl+1)*(base1+diff1);
+			%plot(ax,ay,'b');
+			ay=ones(1,maxr-maxl+1)*(base2+diff2);
+			%plot(ax,ay,'b');
 
-       %                 for k=maxl:maxr
-       %                         rebuild(x(k))=polyval(p,k-maxl+1);
-       %                 end
-       %         end
-       %         ptone=tone;
+			for k=maxl:maxr
+				rebuild(x(k))=polyval(p,k-maxl+1);
+			end
+		end
+		ptone=tone;
 
-       % end
+	end
 
 	output=fopen(['match/f0files-modified/' list(i).name],'w');
 	fprintf(output,'%f\n',rebuild);
