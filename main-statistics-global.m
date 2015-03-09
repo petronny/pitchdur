@@ -1,13 +1,13 @@
 clear
 close all;
 
-method='linear';
+method='exponent';
 f0dir='match/f0files/';
 labdir=regexprep(f0dir,'f0files','lab');
 list=dir([f0dir,'*.f0_ascii']);
 num=length(list);
 data=[];
-for i=1:1:num
+for i=93:93%:num
 
 	fprintf('%d:%s\n',i,list(i).name);
 	input=fopen([f0dir list(i).name],'r');
@@ -29,9 +29,12 @@ for i=1:1:num
 		[b f]=lowpass(tmp,(breaks(j+1)-breaks(j))/100,left);
 		if f==1
 			p=globalfit(b,left,right,method);
-			if max(p)>1e3
+			if max(p)>1e4
 				b
-				[p right-left+1 j]
+				polyval(p,linspace(0,right-left+1,right-left+1))
+				[p]
+				right-left+1
+				j
 			end
 			data=[data;p right-left+1];
 		end
