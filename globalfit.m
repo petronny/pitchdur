@@ -22,10 +22,14 @@ if strcmp(method,'linear')
 end
 
 if strcmp(method,'exponent')
-	unit=max(b)/2;
-	p=polyfit(linspace(0,right-left,right-left+1),exp(b/unit*log(20)),1);
+	unit=max(b);
+	index=10;
+	p=polyfit(linspace(0,right-left,right-left+1),exp(b/unit*log(index)),1);
 	if flag==1
 		y22=polyval(p,linspace(0,right-left+1,right-left+1));
-		plot(linspace(left,right,right-left+1),log(y22)/log(20)*unit,'r-.');
+		if min(y22)<0
+			fprintf('exponent ERROR!');
+		end
+		plot(linspace(left,right,right-left+1),log(y22)/log(index)*unit,'r-.');
 	end
 end

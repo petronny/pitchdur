@@ -9,7 +9,7 @@ num=length(list);
 data=[];
 for i=1:1:num
 
-	%fprintf('%d:%s\n',i,list(i).name);
+	fprintf('%d:%s\n',i,list(i).name);
 	input=fopen([f0dir list(i).name],'r');
 	a=fscanf(input,'%f');
 	fclose(input);
@@ -29,9 +29,6 @@ for i=1:1:num
 		[b f]=lowpass(tmp,(breaks(j+1)-breaks(j))/100,left);
 		if f==1
 			p=globalfit(b,left,right,method);
-			if p(1)>0
-				fprintf('Sentence No.%d of %s\n',j,list(i).name);
-			end
 			data=[data;p right-left+1];
 		end
 	end
