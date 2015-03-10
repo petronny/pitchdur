@@ -7,9 +7,9 @@ labdir=regexprep(f0dir,'f0files','lab');
 list=dir([f0dir,'*.f0_ascii']);
 num=length(list);
 data=[];
-for i=93:93%:num
+for i=1:1:num
 
-	fprintf('%d:%s\n',i,list(i).name);
+	%fprintf('%d:%s\n',i,list(i).name);
 	input=fopen([f0dir list(i).name],'r');
 	a=fscanf(input,'%f');
 	fclose(input);
@@ -29,12 +29,8 @@ for i=93:93%:num
 		[b f]=lowpass(tmp,(breaks(j+1)-breaks(j))/100,left);
 		if f==1
 			p=globalfit(b,left,right,method);
-			if max(p)>1e4
-				b
-				polyval(p,linspace(0,right-left+1,right-left+1))
-				[p]
-				right-left+1
-				j
+			if p(1)>0
+				fprintf('Sentence No.%d of %s\n',j,list(i).name);
 			end
 			data=[data;p right-left+1];
 		end
