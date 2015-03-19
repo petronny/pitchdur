@@ -22,8 +22,8 @@ if strcmp(method,'linear')
 end
 
 if strcmp(method,'exponent')
-	unit=max(b);
-	index=10;
+	unit=max(b)/2;
+	index=20;
 	p=polyfit(linspace(0,right-left,right-left+1),exp(b/unit*log(index)),1);
 	if flag==1
 		y22=polyval(p,linspace(0,right-left+1,right-left+1));
