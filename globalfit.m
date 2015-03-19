@@ -22,6 +22,19 @@ if strcmp(method,'linear')
 end
 
 if strcmp(method,'exponent')
+	unit=1;
+	index=exp(1);
+	p=polyfit(linspace(0,right-left,right-left+1),log(b/unit)/log(index),1);
+	if flag==1
+		y22=polyval(p,linspace(0,right-left+1,right-left+1));
+		if min(y22)<0
+			fprintf('exponent ERROR!');
+		end
+		plot(linspace(left,right,right-left+1),exp(y22*log(index))*unit,'r-.');
+	end
+end
+
+if strcmp(method,'logarithm')
 	unit=max(b)/2;
 	index=20;
 	p=polyfit(linspace(0,right-left,right-left+1),exp(b/unit*log(index)),1);
