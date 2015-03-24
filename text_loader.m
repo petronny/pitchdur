@@ -1,5 +1,5 @@
-input=fopen('origin/2000Script(minimal)_checked_sp_sy.txt','r');
-output=fopen('origin/2000_sp_sy.txt','w');
+input=fopen('origin/500script.txt','r');
+output=fopen('origin/500_sp_sy.txt','w');
 pline=0;
 while ~feof(input)
 	text=fgets(input);
@@ -23,11 +23,11 @@ while ~feof(input)
 					for j=1:count
 						if j==count
 							if length(stop)==0
-								stop=' ';
+								stop='=';
 							end
-							fprintf(output,'%s%s',label,stop);
+							fprintf(output,'%s%s ',label,stop);
 						else
-							fprintf(output,'%s-',label);
+							fprintf(output,'%s- ',label);
 						end
 					end
 					count=0;
