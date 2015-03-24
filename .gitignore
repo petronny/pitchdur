@@ -3,6 +3,7 @@ match/
 origin/
 statistics*/
 windows/
+weka/bin/
 rebuild*/
 *.swp
 *.exe
