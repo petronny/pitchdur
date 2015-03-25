@@ -15,8 +15,8 @@ num=length(list);
 output=fopen('match/data.arff' ,'w');
 fprintf(output,'@RELATION data\n');
 for k=-2:2
-	fprintf(output,'@ATTRIBUTE initial%d {none,b,c,ch,d,f,g,h,j,k,l,m,n,none,p,q,r,s,sh,t,w,x,y,z,zh}\n',k);
-	fprintf(output,'@ATTRIBUTE vowel%d {none,a,ai,an,ang,ao,e,ei,en,eng,er,i,ia,ian,iang,iao,ie,in,ing,iong,iu,none,o,ong,ou,u,ua,uai,uan,uang,ue,ui,un,uo,v}\n',k);
+	fprintf(output,'@ATTRIBUTE initial%d {b,c,ch,d,f,g,h,j,k,l,m,n,none,p,q,r,s,sh,t,w,x,y,z,zh}\n',k);
+	fprintf(output,'@ATTRIBUTE vowel%d {a,ai,an,ang,ao,e,ei,en,eng,er,i,ia,ian,iang,iao,ie,in,ing,iong,iu,none,o,ong,ou,u,ua,uai,uan,uang,ue,ui,un,uo,v}\n',k);
 end
 for k=1:5
 	fprintf(output,'@ATTRIBUTE tone%d {-1,1,2,3,4,5}\n',k);
@@ -30,6 +30,7 @@ end
 fprintf(output,'@ATTRIBUTE a REAL\n');
 fprintf(output,'@ATTRIBUTE b REAL\n');
 fprintf(output,'@ATTRIBUTE c REAL\n');
+fprintf(output,'@DATA\n');
 
 for i=1:1:num
 	fprintf('%d:%s\n',i,list(i).name);
