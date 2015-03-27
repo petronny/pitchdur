@@ -7,6 +7,7 @@ fclose(input);
 labels=labels{1};
 all1={};
 all2={};
+window=2;
 f0dir='match/f0files/';
 labdir=regexprep(f0dir,'f0files','lab');
 list=dir([f0dir,'*.f0_ascii']);
@@ -14,17 +15,17 @@ num=length(list);
 
 output=fopen('match/data.arff' ,'w');
 fprintf(output,'@RELATION data\n');
-for k=-2:2
+for k=-window:window
 	fprintf(output,'@ATTRIBUTE initial%d {b,c,ch,d,f,g,h,j,k,l,m,n,none,p,q,r,s,sh,t,w,x,y,z,zh}\n',k);
 	fprintf(output,'@ATTRIBUTE vowel%d {a,ai,an,ang,ao,e,ei,en,eng,er,i,ia,ian,iang,iao,ie,in,ing,iong,iu,none,o,ong,ou,u,ua,uai,uan,uang,ue,ui,un,uo,v}\n',k);
 end
-for k=1:5
+for k=-window:window
 	fprintf(output,'@ATTRIBUTE tone%d {-1,1,2,3,4,5}\n',k);
 end
-for k=1:5
+for k=-window:window
 	fprintf(output,'@ATTRIBUTE label%d {sp,a,ad,an,b,c,d,f,g,i,j,k,l,m,n,nr,ns,nt,nz,p,q,r,s,t,u,v,vd,vn,y,z}\n',k);
 end
-for k=1:5
+for k=-window:window
 	fprintf(output,'@ATTRIBUTE stop%d {sp,=,-,|}\n',k);
 end
 fprintf(output,'@ATTRIBUTE a REAL\n');
@@ -80,7 +81,7 @@ for i=1:1:num
 	end
 
 	for j=1:count
-		for k=j-2:j+2
+		for k=j-window:j+window
 			if k<=0 || k>count
 				fprintf(output,'none,none,');
 			else
@@ -89,7 +90,7 @@ for i=1:1:num
 				fprintf(output,'%s,%s,',initial,vowel);
 			end
 		end
-		for k=j-2:j+2
+		for k=j-window:j+window
 			if k<=0 || k>count
 				fprintf(output,'-1,');
 			else
@@ -101,7 +102,7 @@ for i=1:1:num
 				end
 			end
 		end
-		for k=j-2:j+2
+		for k=j-window:j+window
 			if k<=0 || k>count
 				fprintf(output,'sp,');
 			else
@@ -109,7 +110,7 @@ for i=1:1:num
 				all1{length(all1)+1}=char(tones(2,k));
 			end
 		end
-		for k=j-2:j+2
+		for k=j-window:j+window
 			if k<=0 || k>count
 				fprintf(output,'sp,');
 			else
@@ -122,11 +123,11 @@ for i=1:1:num
 end
 fclose(output);
 %all1=unique(all1,'first');
-all2=unique(all2,'first');
+%all2=unique(all2,'first');
 %for i=1:length(all1)
         %fprintf('%s,',all1{i});
 %end
 %fprintf('\n');
-for i=1:length(all2)
-        fprintf('%s,',all2{i});
-end
+%for i=1:length(all2)
+        %fprintf('%s,',all2{i});
+%end
