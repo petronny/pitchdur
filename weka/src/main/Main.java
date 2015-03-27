@@ -7,11 +7,14 @@ import weka.core.Instances;
 import weka.core.converters.ArffLoader;
 import weka.classifiers.evaluation.Evaluation;
 import weka.classifiers.functions.MultilayerPerceptron;
+import weka.classifiers.lazy.IBk;
 public class Main {
 
 	public static void main(String[] args) throws Exception{
 		// TODO Auto-generated method stub
 		MultilayerPerceptron m_classifier = new  MultilayerPerceptron();
+		IBk cfs=new IBk();
+		cfs.setKNN(2);
 		String[] options = new String[] {"-L","0.3"};
 		m_classifier.setOptions(options);
 	     File inputFile = new File("/home/petron/pitchdur/match/data.arff");//训练语料文件
