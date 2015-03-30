@@ -1,6 +1,9 @@
 package main;
 
 import java.io.File;
+import java.util.Random;
+
+import weka.classifiers.lazy.IBk;
 import weka.core.Instances;
 import weka.filters.Filter;
 import weka.core.converters.ArffLoader;
@@ -21,40 +24,35 @@ public class Main {
 		Remove remove = new Remove();
 		remove.setAttributeIndicesArray(removeList);
 		remove.setInputFormat(inst);
-		Instances instancesTrain = Filter.useFilter(inst, remove);
+		Instances input = Filter.useFilter(inst, remove);
 
-		cIdx = instancesTrain.numAttributes() - 1;
-		instancesTrain.setClassIndex(cIdx);
+		cIdx = input.numAttributes() - 1;
+		input.setClassIndex(cIdx);
 
-		System.out.println(instancesTrain);
+		// Use Cross Validation
+		int seed = 161026;// Just a time
+		int folds = 2;
+		Random rand = new Random(seed);
+		Instances randData = new Instances(input);
+		randData.randomize(rand);
+		randData.stratify(folds);
 
-		// MultilayerPerceptron m_classifier = new MultilayerPerceptron();
-		// IBk cfs = new IBk();
-		// cfs.setKNN(2);
-		// String[] options = new String[] { "-L", "0.3" };
-		// m_classifier.setOptions(options);
-		//
-		// Evaluation eval = new Evaluation(instancesTrain);
-		// eval.crossValidateModel(m_classifier, instancesTrain, 2, new
-		// Random(1));
-		// inputFile = new
-		// File("/home/petron/weka/src/weka-3-7-12/data/cpu.with.vendor.arff");//测试语料文件
-		// atf.setFile(inputFile);
-		// Instances instancesTest = atf.getDataSet(); // 读入测试文件
-		// instancesTest.setClassIndex(0);
-		// //设置分类属性所在行号（第一行为0号），instancesTest.numAttributes()可以取得属性总数
-		// double sum = instancesTest.numInstances(),//测试语料实例数
-		// right = 0.0f;
-		// instancesTrain.setClassIndex(0);
-		//
-		// m_classifier.buildClassifier(instancesTrain); //训练
-		// for(int i = 0;i<sum;i++)//测试分类结果
-		// {
-		// if(m_classifier.classifyInstance(instancesTest.instance(i))==instancesTest.instance(i).classValue())//如果预测值和答案值相等（测试语料中的分类列提供的须为正确答案，结果才有意义）
-		// {
-		// right++;//正确值加1
-		// }
-		// }
-		// System.out.println("J48 classification precision:"+(right/sum));
+		for (int n = 0; n < folds; n++) {
+			Instances train = randData.trainCV(folds, n);
+			Instances test = randData.testCV(folds, n);
+
+			// Configure the classifier
+			IBk cfs = new IBk();
+			cfs.setKNN(2);
+			String[] options = new String[] {};
+			cfs.setOptions(options);
+
+			// Train & Test
+			cfs.buildClassifier(train);
+			for (int i=0;i<test.numInstances();i++){
+				double result_test=cfs.classifyInstance(test.instance(i));
+				System.out.println(result_test);
+			}
+		}
 	}
 }

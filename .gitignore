@@ -7,3 +7,4 @@ weka/bin/
 rebuild*/
 *.swp
 *.exe
+*.arff

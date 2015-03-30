@@ -7,13 +7,13 @@ fclose(input);
 labels=labels{1};
 all1={};
 all2={};
-window=2;
+window=0;
 f0dir='match/f0files/';
 labdir=regexprep(f0dir,'f0files','lab');
 list=dir([f0dir,'*.f0_ascii']);
 num=length(list);
 
-output=fopen('match/data.arff' ,'w');
+output=fopen('weka/data.arff' ,'w');
 fprintf(output,'@RELATION data\n');
 for k=-window:window
 	fprintf(output,'@ATTRIBUTE initial%d {b,c,ch,d,f,g,h,j,k,l,m,n,none,p,q,r,s,sh,t,w,x,y,z,zh}\n',k);
@@ -51,7 +51,7 @@ for i=1:1:num
 			tmp=a(left:right);
 			x=linspace(left,right,right-left+1);
 			[p r1 r2 maxl maxr]=parafit(x,tmp);
-			data=[data;p];
+			data=[data;p maxr-maxl+1];
 		end
 	end
 
@@ -118,7 +118,7 @@ for i=1:1:num
 				fprintf(output,'%s,',char(tones(3,k)));
 			end
 		end
-		fprintf(output,'%f,',data(j,4));
+		fprintf(output,'%d,',data(j,4));
 		fprintf(output,'%f,',data(j,1:2));
 		fprintf(output,'%f\n',data(j,3));
 	end
