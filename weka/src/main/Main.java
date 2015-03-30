@@ -14,44 +14,55 @@ public class Main {
 	public static void main(String[] args) throws Exception {
 
 		// Configure the input file
-		File inputFile = new File("/home/petron/pitchdur/match/data.arff");
-		ArffLoader atf = new ArffLoader();
-		atf.setFile(inputFile);
-		Instances inst = atf.getDataSet();
+		File inputFile = new File("data.arff");
+		ArffLoader arffLoader = new ArffLoader();
+		arffLoader.setFile(inputFile);
+		Instances input = arffLoader.getDataSet();
 
-		int cIdx = inst.numAttributes() - 1;
-		int[] removeList = new int[] { cIdx - 1, cIdx - 2 };
-		Remove remove = new Remove();
-		remove.setAttributeIndicesArray(removeList);
-		remove.setInputFormat(inst);
-		Instances input = Filter.useFilter(inst, remove);
-
-		cIdx = input.numAttributes() - 1;
-		input.setClassIndex(cIdx);
-
-		// Use Cross Validation
-		int seed = 161026;// Just a time
-		int folds = 2;
+		// Randomize the data
+		int seed = 161026;// Just a string of time
 		Random rand = new Random(seed);
 		Instances randData = new Instances(input);
 		randData.randomize(rand);
-		randData.stratify(folds);
 
-		for (int n = 0; n < folds; n++) {
-			Instances train = randData.trainCV(folds, n);
-			Instances test = randData.testCV(folds, n);
+		for (int removedAttr = 0; removedAttr < 3; removedAttr++) {
 
-			// Configure the classifier
-			IBk cfs = new IBk();
-			cfs.setKNN(2);
-			String[] options = new String[] {};
-			cfs.setOptions(options);
+			// Remove not needed attribute
+			Remove remove = new Remove();
+			int cIdx = randData.numAttributes() - 1;
+			int[] removeList = new int[] { cIdx - 2 + (removedAttr + 1) % 3,
+					cIdx - 2 + (removedAttr + 2) % 3 };
+			remove.setAttributeIndicesArray(removeList);
+			remove.setInputFormat(randData);
+			Instances finalData = Filter.useFilter(randData, remove);
+			cIdx = finalData.numAttributes() - 1;
+			finalData.setClassIndex(cIdx);
 
-			// Train & Test
-			cfs.buildClassifier(train);
-			for (int i=0;i<test.numInstances();i++){
-				double result_test=cfs.classifyInstance(test.instance(i));
-				System.out.println(result_test);
+			// Use cross validation
+			int folds = 2;
+			finalData.stratify(folds);
+
+			for (int n = 0; n < folds; n++) {
+
+				Instances train = finalData.trainCV(folds, n);
+				Instances test = finalData.testCV(folds, n);
+
+				// Configure the classifier
+				IBk cfs = new IBk();
+				cfs.setKNN(20);
+				String[] options = new String[] {};
+				cfs.setOptions(options);
+
+				// Train & Test
+				cfs.buildClassifier(train);
+				double totaldiff = 0;
+				for (int i = 0; i < test.numInstances(); i++) {
+					double result = test.instance(i).classValue();
+					double result_test = cfs.classifyInstance(test.instance(i));
+					double diff = Math.abs(result_test - result);
+					totaldiff += diff;
+				}
+				System.out.printf("%f\n", totaldiff / test.numInstances());
 			}
 		}
 	}
