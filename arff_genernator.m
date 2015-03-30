@@ -28,6 +28,7 @@ end
 for k=-window:window
 	fprintf(output,'@ATTRIBUTE stop%d {sp,=,-,|}\n',k);
 end
+fprintf(output,'@ATTRIBUTE time REAL\n');
 fprintf(output,'@ATTRIBUTE a REAL\n');
 fprintf(output,'@ATTRIBUTE b REAL\n');
 fprintf(output,'@ATTRIBUTE c REAL\n');
@@ -117,6 +118,7 @@ for i=1:1:num
 				fprintf(output,'%s,',char(tones(3,k)));
 			end
 		end
+		fprintf(output,'%f,',data(j,4));
 		fprintf(output,'%f,',data(j,1:2));
 		fprintf(output,'%f\n',data(j,3));
 	end
