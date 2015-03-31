@@ -1,6 +1,7 @@
 package main;
 
 import java.io.File;
+import java.io.FileWriter;
 import java.util.Random;
 
 import weka.classifiers.lazy.IBk;
@@ -24,14 +25,16 @@ public class Main {
 		Random rand = new Random(seed);
 		Instances randData = new Instances(input);
 		randData.randomize(rand);
+		double[][] parameters;
+		parameters = new double[randData.numInstances()][6];
 
-		for (int removedAttr = 0; removedAttr < 3; removedAttr++) {
+		for (int selectedAttr = 0; selectedAttr < 3; selectedAttr++) {
 
 			// Remove not needed attribute
 			Remove remove = new Remove();
 			int cIdx = randData.numAttributes() - 1;
-			int[] removeList = new int[] { cIdx - 2 + (removedAttr + 1) % 3,
-					cIdx - 2 + (removedAttr + 2) % 3 };
+			int[] removeList = new int[] { cIdx - 2 + (selectedAttr + 1) % 3,
+					cIdx - 2 + (selectedAttr + 2) % 3 };
 			remove.setAttributeIndicesArray(removeList);
 			remove.setInputFormat(randData);
 			Instances finalData = Filter.useFilter(randData, remove);
@@ -42,6 +45,7 @@ public class Main {
 			int folds = 2;
 			finalData.stratify(folds);
 
+			int count = 0;
 			for (int n = 0; n < folds; n++) {
 
 				Instances train = finalData.trainCV(folds, n);
@@ -60,10 +64,23 @@ public class Main {
 					double result = test.instance(i).classValue();
 					double result_test = cfs.classifyInstance(test.instance(i));
 					double diff = Math.abs(result_test - result);
+					parameters[count][selectedAttr] = result;
+					parameters[count][selectedAttr + 3] = result_test;
+					count++;
 					totaldiff += diff;
 				}
 				System.out.printf("%f\n", totaldiff / test.numInstances());
 			}
 		}
+
+		// Output
+		FileWriter output = new FileWriter("parameters.txt");
+		for (int i = 0; i < randData.numInstances(); i++) {
+			for (int j = 0; j < 6; j++)
+				output.write(String.format("%f ", parameters[i][j]));
+			output.write("\n");
+			output.flush();
+		}
+		output.close();
 	}
 }
