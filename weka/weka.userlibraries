@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<eclipse-userlibraries version="2">
+    <library name="weka" systemlibrary="false">
+        <archive path="/home/petron/wekafiles/packages/LibSVM/LibSVM.jar"/>
+        <archive path="/home/petron/wekafiles/packages/LibSVM/lib/libsvm.jar"/>
+        <archive path="/usr/share/java/weka/weka.jar"/>
+    </library>
+</eclipse-userlibraries>

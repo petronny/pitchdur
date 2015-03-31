@@ -4,7 +4,7 @@ origin/
 statistics*/
 windows/
 weka/bin/
-weka/parameters.txt
+weka/*.txt
 rebuild*/
 *.swp
 *.exe

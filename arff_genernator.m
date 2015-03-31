@@ -7,7 +7,8 @@ fclose(input);
 labels=labels{1};
 all1={};
 all2={};
-window=0;
+window=2;
+noglobal=1;
 f0dir='match/f0files/';
 labdir=regexprep(f0dir,'f0files','lab');
 list=dir([f0dir,'*.f0_ascii']);
@@ -32,6 +33,8 @@ fprintf(output,'@ATTRIBUTE time REAL\n');
 fprintf(output,'@ATTRIBUTE a REAL\n');
 fprintf(output,'@ATTRIBUTE b REAL\n');
 fprintf(output,'@ATTRIBUTE c REAL\n');
+fprintf(output,'@ATTRIBUTE min REAL\n');
+fprintf(output,'@ATTRIBUTE max REAL\n');
 fprintf(output,'@DATA\n');
 
 for i=1:1:num
@@ -42,6 +45,29 @@ for i=1:1:num
 
 	[breaks marks tones]=lab_format_parser([labdir regexprep(list(i).name,'f0_ascii','lab')]);
 
+	if noglobal
+		for j=1:length(breaks)-1
+			left=round(breaks(j));
+			right=min(round(breaks(j+1)),length(a));
+			while a(left)==0 && left<right;
+				left=left+1;
+			end
+			while a(right)==0 && left<right;
+				right=right-1;
+			end
+			tmp=a(left:right);
+			[b f]=lowpass(tmp,(breaks(j+1)-breaks(j))/100,left);
+			if f==1
+				p=globalfit(b,left,right,'linear');
+				for k=left:right
+					if tmp(k-left+1)~=0
+						a(k)=tmp(k-left+1)-b(k-left+1);
+					end
+				end
+			end
+		end
+	end
+
 	data=[];
 	for j=1:length(marks)-1
 		sound=char(tones(j+1));
@@ -51,7 +77,11 @@ for i=1:1:num
 			tmp=a(left:right);
 			x=linspace(left,right,right-left+1);
 			[p r1 r2 maxl maxr]=parafit(x,tmp);
-			data=[data;p maxr-maxl+1];
+			if maxr>0
+				data=[data;p maxr-maxl+1 min(tmp(maxl:maxr)) max(tmp(maxl:maxr))];
+			else
+				data=[data;p maxr-maxl+1 0 0];
+			end
 		end
 	end
 
@@ -119,17 +149,10 @@ for i=1:1:num
 			end
 		end
 		fprintf(output,'%d,',data(j,4));
-		fprintf(output,'%f,',data(j,1:2));
-		fprintf(output,'%f\n',data(j,3));
+		fprintf(output,'%f,',data(j,1:3));
+		fprintf(output,'%f,',data(j,5));
+		fprintf(output,'%f',data(j,6));
+		fprintf(output,'\n');
 	end
 end
 fclose(output);
-%all1=unique(all1,'first');
-%all2=unique(all2,'first');
-%for i=1:length(all1)
-        %fprintf('%s,',all1{i});
-%end
-%fprintf('\n');
-%for i=1:length(all2)
-        %fprintf('%s,',all2{i});
-%end
