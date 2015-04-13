@@ -5,6 +5,7 @@ import java.io.FileWriter;
 import java.util.Random;
 
 import weka.classifiers.functions.LinearRegression;
+import weka.classifiers.trees.REPTree;
 import weka.core.Instances;
 import weka.filters.Filter;
 import weka.core.converters.ArffLoader;
@@ -15,7 +16,7 @@ public class Main {
 	public static void main(String[] args) throws Exception {
 
 		// Configure the input file
-		File inputFile = new File("data.arff");
+		File inputFile = new File("data-noglobal1-window2.arff");
 		ArffLoader arffLoader = new ArffLoader();
 		arffLoader.setFile(inputFile);
 		Instances input = arffLoader.getDataSet();
@@ -31,7 +32,7 @@ public class Main {
 		parameters = new double[randData.numInstances()][2 * numOfTargetAttr + 1];
 		double[] totaldiff = new double[numOfTargetAttr];
 
-		for (int selectedAttr = 3; selectedAttr < numOfTargetAttr; selectedAttr++) {
+		for (int selectedAttr = 0; selectedAttr < numOfTargetAttr; selectedAttr++) {
 
 			// Remove not needed attribute
 			Remove remove = new Remove();
@@ -52,12 +53,15 @@ public class Main {
 
 			int count = 0;
 			for (int n = 0; n < folds; n++) {
+				
+				System.out.printf("attribute:%d fold:%d\n",selectedAttr,n);
 
 				Instances train = finalData.trainCV(folds, n);
 				Instances test = finalData.testCV(folds, n);
 
 				// Configure the classifier
 				LinearRegression cfs = new LinearRegression();
+//				REPTree cfs=new REPTree();
 				String[] options = new String[] {};
 				cfs.setOptions(options);
 

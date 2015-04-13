@@ -1,35 +1,33 @@
-clear
-close all;
+function arff_genernator(window,noglobal)
+if nargin<2
+	noglobal=1;
+end
 
 input=fopen('origin/500_sp_sy.txt','r');
 labels = textscan(input,'%s','Delimiter','\n');
 fclose(input);
 labels=labels{1};
-all1={};
-all2={};
-window=2;
-noglobal=1;
 f0dir='match/f0files/';
 labdir=regexprep(f0dir,'f0files','lab');
 list=dir([f0dir,'*.f0_ascii']);
 num=length(list);
 
-output=fopen('weka/data.arff' ,'w');
+output=fopen([ 'weka/data-noglobal' noglobal+'0' '-window' window+'0' '.arff' ],'w');
 fprintf(output,'@RELATION data\n');
+
 for k=-window:window
 	fprintf(output,'@ATTRIBUTE initial%d {b,c,ch,d,f,g,h,j,k,l,m,n,none,p,q,r,s,sh,t,w,x,y,z,zh}\n',k);
 	fprintf(output,'@ATTRIBUTE vowel%d {a,ai,an,ang,ao,e,ei,en,eng,er,i,ia,ian,iang,iao,ie,in,ing,iong,iu,none,o,ong,ou,u,ua,uai,uan,uang,ue,ui,un,uo,v}\n',k);
 end
-for k=-window:window
-	fprintf(output,'@ATTRIBUTE tone%d {-1,1,2,3,4,5}\n',k);
-end
-for k=-window:window
-	fprintf(output,'@ATTRIBUTE label%d {sp,a,ad,an,b,c,d,f,g,i,j,k,l,m,n,nr,ns,nt,nz,p,q,r,s,t,u,v,vd,vn,y,z}\n',k);
-end
-for k=-window:window
-	fprintf(output,'@ATTRIBUTE stop%d {sp,=,-,|}\n',k);
-end
+k=linspace(-window,window,window*2+1);
+fprintf(output,'@ATTRIBUTE tone%d {-1,1,2,3,4,5}\n',k);
+fprintf(output,'@ATTRIBUTE label%d {sp,a,ad,an,b,c,d,f,g,i,j,k,l,m,n,nr,ns,nt,nz,p,q,r,s,t,u,v,vd,vn,y,z}\n',k);
+fprintf(output,'@ATTRIBUTE stop%d {sp,=,-,|}\n',k);
 fprintf(output,'@ATTRIBUTE time REAL\n');
+fprintf(output,'@ATTRIBUTE r1 REAL\n');
+fprintf(output,'@ATTRIBUTE r2 REAL\n');
+fprintf(output,'@ATTRIBUTE ax REAL\n');
+
 fprintf(output,'@ATTRIBUTE a REAL\n');
 fprintf(output,'@ATTRIBUTE b REAL\n');
 fprintf(output,'@ATTRIBUTE c REAL\n');
@@ -77,10 +75,19 @@ for i=1:1:num
 			tmp=a(left:right);
 			x=linspace(left,right,right-left+1);
 			[p r1 r2 maxl maxr]=parafit(x,tmp);
+
 			if maxr>0
-				data=[data;p maxr-maxl+1 min(tmp(maxl:maxr)) max(tmp(maxl:maxr))];
+				ax=-p(2)/2/p(1);
+				ax=ax/(maxr-maxl);
+				if ax<0
+					ax=0;
+				end
+				if ax >1
+					ax=1;
+				end
+				data=[data;maxr-maxl+1 r1 r2 ax p min(tmp(maxl:maxr)) max(tmp(maxl:maxr))];
 			else
-				data=[data;p maxr-maxl+1 0 0];
+				data=[data;maxr-maxl+1 r1 r2 0 p 0 0];
 			end
 		end
 	end
@@ -138,7 +145,6 @@ for i=1:1:num
 				fprintf(output,'sp,');
 			else
 				fprintf(output,'%s,',char(tones(2,k)));
-				all1{length(all1)+1}=char(tones(2,k));
 			end
 		end
 		for k=j-window:j+window
@@ -148,10 +154,10 @@ for i=1:1:num
 				fprintf(output,'%s,',char(tones(3,k)));
 			end
 		end
-		fprintf(output,'%d,',data(j,4));
-		fprintf(output,'%f,',data(j,1:3));
-		fprintf(output,'%f,',data(j,5));
-		fprintf(output,'%f',data(j,6));
+		datalength=size(data);
+		datalength=datalength(2);
+		fprintf(output,'%f,',data(j,1:datalength-1));
+		fprintf(output,'%f',data(j,datalength));
 		fprintf(output,'\n');
 	end
 end
