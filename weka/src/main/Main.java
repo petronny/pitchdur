@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.FileWriter;
 import java.util.Random;
 
-import weka.classifiers.functions.LinearRegression;
 import weka.classifiers.trees.REPTree;
 import weka.core.Instances;
 import weka.filters.Filter;
@@ -16,11 +15,11 @@ public class Main {
 	public static void main(String[] args) throws Exception {
 
 		// Configure the input file
-		File inputFile = new File("data-noglobal1-window2.arff");
+		File inputFile = new File("data-noglobal1-round0-window2.arff");
 		ArffLoader arffLoader = new ArffLoader();
 		arffLoader.setFile(inputFile);
 		Instances input = arffLoader.getDataSet();
-		int numOfTargetAttr = 5;
+		int numOfTargetAttr = 6;
 
 		// Randomize the data
 		int seed = 161026;// Just a string of time
@@ -53,17 +52,16 @@ public class Main {
 
 			int count = 0;
 			for (int n = 0; n < folds; n++) {
-				
-				System.out.printf("attribute:%d fold:%d\n",selectedAttr,n);
+
+				System.out.printf("attribute:%d fold:%d\n", selectedAttr, n);
 
 				Instances train = finalData.trainCV(folds, n);
 				Instances test = finalData.testCV(folds, n);
 
 				// Configure the classifier
-				LinearRegression cfs = new LinearRegression();
-//				REPTree cfs=new REPTree();
-				String[] options = new String[] {};
-				cfs.setOptions(options);
+//				LinearRegression cfs = new LinearRegression();
+				REPTree cfs = new REPTree();
+//				IBk cfs=new IBk(2);
 
 				// Train & Test
 				cfs.buildClassifier(train);
@@ -82,7 +80,10 @@ public class Main {
 					parameters[count][2 * numOfTargetAttr] = test.instance(i)
 							.value(randData.attribute("time"));
 					count++;
-					totaldiff[selectedAttr] += diff;
+					if (!Double.isNaN(diff))
+						totaldiff[selectedAttr] += diff;
+					else
+						System.out.printf("NaN error: %d %f %f\n", i,result,result_test);
 				}
 			}
 		}

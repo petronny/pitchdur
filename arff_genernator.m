@@ -1,4 +1,7 @@
-function arff_genernator(window,noglobal)
+function arff_genernator(window,noglobal,fround)
+if nargin<3
+	fround=0;
+end
 if nargin<2
 	noglobal=1;
 end
@@ -12,7 +15,7 @@ labdir=regexprep(f0dir,'f0files','lab');
 list=dir([f0dir,'*.f0_ascii']);
 num=length(list);
 
-output=fopen([ 'weka/data-noglobal' noglobal+'0' '-window' window+'0' '.arff' ],'w');
+output=fopen([ 'weka/data-noglobal' noglobal+'0' '-round' fround+'0' '-window' window+'0' '.arff' ],'w');
 fprintf(output,'@RELATION data\n');
 
 for k=-window:window
@@ -26,13 +29,13 @@ fprintf(output,'@ATTRIBUTE stop%d {sp,=,-,|}\n',k);
 fprintf(output,'@ATTRIBUTE time REAL\n');
 fprintf(output,'@ATTRIBUTE r1 REAL\n');
 fprintf(output,'@ATTRIBUTE r2 REAL\n');
-fprintf(output,'@ATTRIBUTE ax REAL\n');
 
 fprintf(output,'@ATTRIBUTE a REAL\n');
 fprintf(output,'@ATTRIBUTE b REAL\n');
 fprintf(output,'@ATTRIBUTE c REAL\n');
 fprintf(output,'@ATTRIBUTE min REAL\n');
 fprintf(output,'@ATTRIBUTE max REAL\n');
+fprintf(output,'@ATTRIBUTE ax REAL\n');
 fprintf(output,'@DATA\n');
 
 for i=1:1:num
@@ -77,17 +80,26 @@ for i=1:1:num
 			[p r1 r2 maxl maxr]=parafit(x,tmp);
 
 			if maxr>0
-				ax=-p(2)/2/p(1);
-				ax=ax/(maxr-maxl);
+				ax=0.5;
+				if p(1)~=0
+					ax=-p(2)/2/p(1);
+					ax=ax/(maxr-maxl);
+				end
 				if ax<0
 					ax=0;
 				end
 				if ax >1
 					ax=1;
 				end
-				data=[data;maxr-maxl+1 r1 r2 ax p min(tmp(maxl:maxr)) max(tmp(maxl:maxr))];
+				%r1=abs(r1);
+				%r2=abs(r2);
+				if fround
+					r1=round(r1);
+					r2=round(r2);
+				end
+				data=[data;maxr-maxl+1 r1 r2 p min(tmp(maxl:maxr)) max(tmp(maxl:maxr)) ax];
 			else
-				data=[data;maxr-maxl+1 r1 r2 0 p 0 0];
+				data=[data;maxr-maxl+1 r1 r2 p 0 0 0.5];
 			end
 		end
 	end
