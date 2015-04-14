@@ -1,4 +1,4 @@
-function [b f]=lowpass(a,t,start)
+function [b f]=lowpass(a,start)
 
 x0=linspace(1,length(a),length(a));
 x0(a==0)=[];
@@ -7,7 +7,7 @@ y0(a==0)=[];
 
 if length(x0)>5
 	Fs=100;
-	d = fdesign.lowpass('fp,fst,ap,ast',1e-12,1/t,1e-12,3,Fs);
+	d = fdesign.lowpass('fp,fst,ap,ast',1e-12,0.5,1e-12,3,Fs);
 	Hd = design(d,'butter');
 
 	ptime=10;

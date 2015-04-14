@@ -1,5 +1,6 @@
 input=fopen('weka/parameters.txt','r');
-parameters = fscanf(input,'%f',[7 inf]);
+attribute=6;
+parameters = fscanf(input,'%f',[2*attribute+1 inf]);
 fclose(input);
 input=fopen('weka/tones.txt','r');
 tones = textscan(input,'%s','Delimiter','\n');
@@ -11,12 +12,12 @@ for i=1:len
 	fprintf('%d %s\n',i,char(tones(i)));
 	h=paper_settings([16 9]);
 
-	time=parameters(7,i);
+	time=parameters(2*attribute+1,i);
 	x=linspace(1,time,time);
 	p=[parameters(1:3,i)];
 	y=polyval(p,x);
 	plot(x,y,'b');
-	p=[parameters(4:6,i)];
+	p=[parameters(1+attribute:3+attribute,i)];
 	y=polyval(p,x);
 	plot(x,y,'r');
 
