@@ -1,9 +1,9 @@
-function arff_genernator(window,noglobal,fround)
+function arff_genernator(window,fround,noglobal)
 if nargin<3
-	fround=0;
+	noglobal=1;
 end
 if nargin<2
-	noglobal=1;
+	fround=0;
 end
 
 input=fopen('origin/500_sp_sy.txt','r');

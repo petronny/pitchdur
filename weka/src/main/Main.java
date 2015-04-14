@@ -15,7 +15,7 @@ public class Main {
 	public static void main(String[] args) throws Exception {
 
 		// Configure the input file
-		File inputFile = new File("data-noglobal1-round0-window2.arff");
+		File inputFile = new File("data-noglobal1-round1-window2.arff");
 		ArffLoader arffLoader = new ArffLoader();
 		arffLoader.setFile(inputFile);
 		Instances input = arffLoader.getDataSet();
@@ -25,7 +25,7 @@ public class Main {
 		int seed = 161026;// Just a string of time
 		Random rand = new Random(seed);
 		Instances randData = new Instances(input);
-		randData.randomize(rand);
+//		randData.randomize(rand);
 		double[][] parameters;
 		String[] tones = new String[randData.numInstances()];
 		parameters = new double[randData.numInstances()][2 * numOfTargetAttr + 1];
