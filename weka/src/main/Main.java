@@ -2,9 +2,9 @@ package main;
 
 import java.io.File;
 import java.io.FileWriter;
-import java.util.Random;
 
 import weka.classifiers.trees.REPTree;
+import weka.core.Instance;
 import weka.core.Instances;
 import weka.filters.Filter;
 import weka.core.converters.ArffLoader;
@@ -15,17 +15,28 @@ public class Main {
 	public static void main(String[] args) throws Exception {
 
 		// Configure the input file
-		File inputFile = new File("data-noglobal1-round1-window2.arff");
+		File inputFile = new File("data-noglobal1-round0-window0.arff");
 		ArffLoader arffLoader = new ArffLoader();
 		arffLoader.setFile(inputFile);
 		Instances input = arffLoader.getDataSet();
 		int numOfTargetAttr = 6;
 
+		// Filter the data
+		for (int i = input.numInstances() - 1; i >= 0; i--) {
+		// it's important to iterate from last to first, because when we remove an instance, the rest shifts by one position.
+		    Instance inst = input.instance(i);
+		    if (inst.stringValue(input.attribute("tone0")).charAt(0) == '1') {
+		    	 System.out.printf("%s\n",inst.stringValue(input.attribute("tone0")) );
+		        input.delete(i);
+		    }
+		}
+		
 		// Randomize the data
-		int seed = 161026;// Just a string of time
-		Random rand = new Random(seed);
 		Instances randData = new Instances(input);
-//		randData.randomize(rand);
+		// int seed = 161026;// Just a string of time
+		// Random rand = new Random(seed);
+		// randData.randomize(rand);
+
 		double[][] parameters;
 		String[] tones = new String[randData.numInstances()];
 		parameters = new double[randData.numInstances()][2 * numOfTargetAttr + 1];
@@ -59,9 +70,9 @@ public class Main {
 				Instances test = finalData.testCV(folds, n);
 
 				// Configure the classifier
-//				LinearRegression cfs = new LinearRegression();
+				// LinearRegression cfs = new LinearRegression();
 				REPTree cfs = new REPTree();
-//				IBk cfs=new IBk(2);
+				// IBk cfs=new IBk(2);
 
 				// Train & Test
 				cfs.buildClassifier(train);
@@ -83,7 +94,8 @@ public class Main {
 					if (!Double.isNaN(diff))
 						totaldiff[selectedAttr] += diff;
 					else
-						System.out.printf("NaN error: %d %f %f\n", i,result,result_test);
+						System.out.printf("NaN error: %d %f %f\n", i, result,
+								result_test);
 				}
 			}
 		}
