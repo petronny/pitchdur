@@ -32,7 +32,7 @@ for i=1:1:num
 			break_count=break_count+1;
 			break_left=round(breaks(break_count));
 			break_right=min(round(breaks(break_count+1)),length(a));
-			while a(break_left)==0 && break_left<right;
+			while a(break_left)==0 && break_left<break_right;
 				break_left=break_left+1;
 			end
 			while a(break_right)==0 && break_left<break_right;

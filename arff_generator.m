@@ -27,8 +27,14 @@ fprintf(output,'@ATTRIBUTE tone%d {-1,1,2,3,4,5}\n',k);
 fprintf(output,'@ATTRIBUTE label%d {sp,a,ad,an,b,c,d,f,g,i,j,k,l,m,n,nr,ns,nt,nz,p,q,r,s,t,u,v,vd,vn,y,z}\n',k);
 fprintf(output,'@ATTRIBUTE stop%d {sp,=,-,|}\n',k);
 fprintf(output,'@ATTRIBUTE time REAL\n');
-fprintf(output,'@ATTRIBUTE r1 REAL\n');
-fprintf(output,'@ATTRIBUTE r2 REAL\n');
+
+if fround == 0
+	fprintf(output,'@ATTRIBUTE r1 REAL\n');
+	fprintf(output,'@ATTRIBUTE r2 REAL\n');
+else
+	fprintf(output,'@ATTRIBUTE r1 {-1,0,1}\n');
+	fprintf(output,'@ATTRIBUTE r2 {-1,0,1}\n');
+end
 
 fprintf(output,'@ATTRIBUTE a REAL\n');
 fprintf(output,'@ATTRIBUTE b REAL\n');
@@ -93,6 +99,16 @@ for i=1:1:num
 				end
 				%r1=abs(r1);
 				%r2=abs(r2);
+				if r1>0
+					r1=1;
+				else
+					r1=-1;
+				end
+				if r2>0
+					r2=1;
+				else
+					r2=-1;
+				end
 				if fround
 					r1=round(r1);
 					r2=round(r2);
@@ -168,9 +184,17 @@ for i=1:1:num
 		end
 		datalength=size(data);
 		datalength=datalength(2);
-		fprintf(output,'%f,',data(j,1:datalength-1));
-		fprintf(output,'%f',data(j,datalength));
-		fprintf(output,'\n');
+		if fround == 0
+			fprintf(output,'%f,',data(j,1:datalength-1));
+			fprintf(output,'%f',data(j,datalength));
+			fprintf(output,'\n');
+		else
+			fprintf(output,'%f,',data(j,1:datalength-8));
+			fprintf(output,'%d,',data(j,datalength-7:datalength-6));
+			fprintf(output,'%f,',data(j,datalength-5:datalength-1));
+			fprintf(output,'%f',data(j,datalength));
+			fprintf(output,'\n');
+		end
 	end
 end
 fclose(output);

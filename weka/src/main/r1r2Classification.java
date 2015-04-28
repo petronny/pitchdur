@@ -3,38 +3,15 @@ package main;
 import java.io.File;
 import java.io.FileWriter;
 
-import weka.classifiers.trees.REPTree;
+import weka.classifiers.functions.LibSVM;
 import weka.core.Instance;
 import weka.core.Instances;
 import weka.filters.Filter;
 import weka.core.converters.ArffLoader;
 import weka.filters.unsupervised.attribute.Remove;
 
-public class Main {
-	public static int numOfTargetAttr = 7;
-
-	public static void scale(double[] para) {
-		double a = para[numOfTargetAttr];
-		double b = para[numOfTargetAttr + 1];
-		double c = para[numOfTargetAttr + 2];
-		double time = para[numOfTargetAttr * 2];
-		double ax = -b / 2 / a;
-		double ay = -(b * b - 4 * a * c) / 4 / a / a;
-		double min1 = Math.min(c, a * time * time + b * time + c);
-		double max1 = Math.max(c, a * time * time + b * time + c);
-		if (ax > 0 && ax < time) {
-			min1 = Math.min(min1, ay);
-			max1 = Math.max(max1, ay);
-		}
-		double min2 = para[numOfTargetAttr + 3];
-		double max2 = para[numOfTargetAttr + 4];
-		if (min1 < max1) {
-			para[numOfTargetAttr] = a * (max2 - min2) / (max1 - min1);
-			para[numOfTargetAttr + 1] = b * (max2 - min2) / (max1 - min1);
-			para[numOfTargetAttr + 2] = (c - min1) * (max2 - min2)
-					/ (max1 - min1) + min2;
-		}
-	}
+public class r1r2Classification {
+	public static int numOfTargetAttr = 8;
 
 	public static void main(String[] args) throws Exception {
 
@@ -49,7 +26,7 @@ public class Main {
 			// it's important to iterate from last to first, because when we
 			// remove an instance, the rest shifts by one position.
 			Instance inst = input.instance(i);
-			if (inst.stringValue(input.attribute("tone0")).charAt(0) != '1') {
+			if (inst.stringValue(input.attribute("tone0")).charAt(0) == 'x') {
 				input.delete(i);
 			}
 		}
@@ -60,12 +37,11 @@ public class Main {
 		// Random rand = new Random(seed);
 		// randData.randomize(rand);
 
-		double[][] parameters;
+		int[][] parameters;
 		String[] tones = new String[randData.numInstances()];
-		parameters = new double[randData.numInstances()][2 * numOfTargetAttr + 1];
-		double[] totaldiff = new double[numOfTargetAttr];
+		parameters = new int[randData.numInstances()][2 * numOfTargetAttr + 1];
 
-		for (int selectedAttr = 1; selectedAttr < numOfTargetAttr; selectedAttr++) {
+		for (int selectedAttr = 0; selectedAttr < 2; selectedAttr++) {
 
 			// Remove not needed attribute
 			Remove remove = new Remove();
@@ -94,54 +70,49 @@ public class Main {
 
 				// Configure the classifier
 				// LinearRegression cfs = new LinearRegression();
-				REPTree cfs = new REPTree();
-				// IBk cfs=new IBk(2);
+				LibSVM cfs = new LibSVM();
 
 				// Train & Test
 				cfs.buildClassifier(train);
 				for (int i = 0; i < test.numInstances(); i++) {
 					double result = test.instance(i).classValue();
-//					test.instance(i).setValue(randData.attribute("r1"),1);
-//					test.instance(i).setValue(randData.attribute("r2"),0);
 					double result_test = cfs.classifyInstance(test.instance(i));
-					parameters[count][selectedAttr] = result;
-					parameters[count][selectedAttr + numOfTargetAttr] = result_test;
+					parameters[count][selectedAttr] = (int) result;
+					parameters[count][selectedAttr + numOfTargetAttr] = (int) result_test;
 					tones[count] = test.instance(i).stringValue(
 							randData.attribute("initial0"))
 							+ test.instance(i).stringValue(
 									randData.attribute("vowel0"))
 							+ test.instance(i).stringValue(
 									randData.attribute("tone0"));
-					parameters[count][2 * numOfTargetAttr] = test.instance(i)
-							.value(randData.attribute("time"));
 					count++;
 				}
 			}
 		}
-		for (int i = 0; i < randData.numInstances(); i++) {
-//			scale(parameters[i]);
-			for (int selectedAttr = 0; selectedAttr < numOfTargetAttr; selectedAttr++) {
-				double diff = Math.abs(parameters[i][selectedAttr
-						+ numOfTargetAttr] - parameters[i][selectedAttr]);
-				totaldiff[selectedAttr] += diff;
+		for (int selectedAttr = 0; selectedAttr < 2; selectedAttr++) {
+			int[][] totaldiff = new int[3][3];
+			for (int i = 0; i < randData.numInstances(); i++)
+				totaldiff[parameters[i][selectedAttr]][parameters[i][selectedAttr
+						+ numOfTargetAttr]] += 1;
+			for (int line = 0; line < 3; line++) {
+				for (int row = 0; row < 3; row++)
+					System.out.printf("%d ", totaldiff[line][row]);
+				System.out.printf("\n");
 			}
+			System.out.printf("%f\n",(double)(totaldiff[0][0]+totaldiff[1][1]+totaldiff[2][2])/randData.numInstances());
 		}
-
-		for (int i = 0; i < numOfTargetAttr; i++)
-			System.out.printf("%f ", totaldiff[i] / randData.numInstances());
 
 		// Output
-		FileWriter output = new FileWriter("parameters-only1.txt");
+		FileWriter output = new FileWriter("r1r2.txt");
 		for (int i = 0; i < randData.numInstances(); i++) {
-			for (int j = 0; j < numOfTargetAttr * 2 + 1; j++)
-				output.write(String.format("%f ", parameters[i][j]));
-			output.write("\n");
+			output.write(String.format("%s\t", tones[i]));
+			output.write(String.format("%d %d\t", parameters[i][0] - 1,
+					parameters[i][1] - 1));
+			output.write(String.format("%d %d\n",
+					parameters[i][numOfTargetAttr] - 1,
+					parameters[i][numOfTargetAttr + 1] - 1));
 			output.flush();
 		}
-		output.close();
-		output = new FileWriter("tones.txt");
-		for (int i = 0; i < randData.numInstances(); i++)
-			output.write(String.format("%s\n", tones[i]));
 		output.close();
 	}
 }

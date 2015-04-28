@@ -10,8 +10,8 @@ import weka.filters.Filter;
 import weka.core.converters.ArffLoader;
 import weka.filters.unsupervised.attribute.Remove;
 
-public class Main {
-	public static int numOfTargetAttr = 7;
+public class r1r2Regression {
+	public static int numOfTargetAttr = 8;
 
 	public static void scale(double[] para) {
 		double a = para[numOfTargetAttr];
@@ -49,7 +49,7 @@ public class Main {
 			// it's important to iterate from last to first, because when we
 			// remove an instance, the rest shifts by one position.
 			Instance inst = input.instance(i);
-			if (inst.stringValue(input.attribute("tone0")).charAt(0) != '1') {
+			if (inst.stringValue(input.attribute("tone0")).charAt(0) == '1') {
 				input.delete(i);
 			}
 		}
@@ -65,7 +65,7 @@ public class Main {
 		parameters = new double[randData.numInstances()][2 * numOfTargetAttr + 1];
 		double[] totaldiff = new double[numOfTargetAttr];
 
-		for (int selectedAttr = 1; selectedAttr < numOfTargetAttr; selectedAttr++) {
+		for (int selectedAttr = 0; selectedAttr < 2; selectedAttr++) {
 
 			// Remove not needed attribute
 			Remove remove = new Remove();
@@ -101,8 +101,6 @@ public class Main {
 				cfs.buildClassifier(train);
 				for (int i = 0; i < test.numInstances(); i++) {
 					double result = test.instance(i).classValue();
-//					test.instance(i).setValue(randData.attribute("r1"),1);
-//					test.instance(i).setValue(randData.attribute("r2"),0);
 					double result_test = cfs.classifyInstance(test.instance(i));
 					parameters[count][selectedAttr] = result;
 					parameters[count][selectedAttr + numOfTargetAttr] = result_test;
@@ -119,29 +117,31 @@ public class Main {
 			}
 		}
 		for (int i = 0; i < randData.numInstances(); i++) {
-//			scale(parameters[i]);
+			// scale(parameters[i]);
 			for (int selectedAttr = 0; selectedAttr < numOfTargetAttr; selectedAttr++) {
 				double diff = Math.abs(parameters[i][selectedAttr
-						+ numOfTargetAttr] - parameters[i][selectedAttr]);
+						+ numOfTargetAttr]
+						- parameters[i][selectedAttr]);
 				totaldiff[selectedAttr] += diff;
 			}
 		}
 
-		for (int i = 0; i < numOfTargetAttr; i++)
+		for (int i = 0; i < 2; i++)
 			System.out.printf("%f ", totaldiff[i] / randData.numInstances());
 
 		// Output
-		FileWriter output = new FileWriter("parameters-only1.txt");
+		FileWriter output = new FileWriter("r1r2.txt");
 		for (int i = 0; i < randData.numInstances(); i++) {
-			for (int j = 0; j < numOfTargetAttr * 2 + 1; j++)
-				output.write(String.format("%f ", parameters[i][j]));
-			output.write("\n");
+			output.write(String.format("%s ", tones[i]));
+			output.write(String.format("%f %f ", parameters[i][0],
+					parameters[i][1]));
+			output.write(String.format("%f %f\n",
+					parameters[i][numOfTargetAttr],
+					parameters[i][numOfTargetAttr + 1]));
+
 			output.flush();
+
 		}
-		output.close();
-		output = new FileWriter("tones.txt");
-		for (int i = 0; i < randData.numInstances(); i++)
-			output.write(String.format("%s\n", tones[i]));
 		output.close();
 	}
 }
