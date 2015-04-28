@@ -1,5 +1,5 @@
 #!/bin/sh
 rm -rf rebuild
-cp -r match/f0files-modified windows
+scp -r match/f0files-modified windows-iaacnlp:jingbei.li
 ssh windows-iaacnlp 'cd jingbei.li && ./straightAmpMod-syn.sh'
-cp -r ./windows/rebuild rebuild
+scp -r windows-iaacnlp:jingbei.li/rebuild rebuild
