@@ -22,6 +22,7 @@ for i=1:1:num
 
 	input=fopen([f0dir regexprep(list(i).name,'lab','f0_ascii')],'r');
 	a=fscanf(input,'%f');
+	gen_points(a);
 	fclose(input);
 	rebuild=zeros(length(a),1);
 	[breaks marks tones]=lab_format_parser([labdir list(i).name]);
@@ -39,9 +40,13 @@ for i=1:1:num
 				break_right=break_right-1;
 			end
 			tmp=a(break_left:break_right);
-			gen_points(a);
 			[b f]=lowpass(tmp,(breaks(break_count+1)-breaks(break_count))/100,break_left);
 			globalp=globalfit(b,break_left,break_right);
+			for k=break_left:break_right
+				if tmp(k-break_left+1)~=0
+					a(k)=tmp(k-break_left+1)-polyval(globalp,k-break_left);
+				end
+			end
 
 			break_count=break_count+1;
 		end
@@ -50,7 +55,6 @@ for i=1:1:num
 			if strcmp(sound(length(sound)),'1')==0
 				count1=count1+1;
 				time=parameters1(2*attribute+1,count1);
-				p1=[parameters1(1:3,count1)];
 				p2=[parameters1(1+attribute:3+attribute,count1)];
 				omin=parameters1(4,count1);
 				pmin=parameters1(4+attribute,count1);
@@ -59,7 +63,6 @@ for i=1:1:num
 			else
 				count2=count2+1;
 				time=parameters2(2*attribute+1,count2);
-				p1=[parameters2(1:3,count2)];
 				p2=[parameters2(1+attribute:3+attribute,count2)];
 				omin=parameters2(4,count2);
 				pmin=parameters2(4+attribute,count2);
@@ -70,16 +73,16 @@ for i=1:1:num
 			left=round(marks(j-1));
 			right=min(round(marks(j)),length(a));
 
-			%right=left+time;
+			x=linspace(left,right,right-left+1);
+			[p1 r1 r2 maxl maxr]=parafit(x,a(left:right));
 
-			[maxl maxr]=exact_match(a(left:right));
-
-			left=left+maxl;
-			right=left+time;
+			left=left+maxl-1;
+			right=left-maxl+maxr-1;
 
 			xx=linspace(left,right,right-left+1);
-			x=linspace(1,time+1,time+1);
+			x=linspace(left-break_left,right-break_left,right-left+1);
 			global_y=polyval(globalp,x);
+			x=linspace(0,right-left,right-left+1);
 			y=polyval(p1,x);
 			plot(xx,y+global_y,'b');
 			y=polyval(p2,x);
@@ -89,7 +92,7 @@ for i=1:1:num
 			%tmin=max([qmin pmin]);
 			%tmax=min([qmax pmax]);
 			%[tmin tmax]=my2sort(tmin,tmax);
-			y=my_scale(y,qmin,qmax,pmin,pmax);
+			%y=my_scale(y,qmin,qmax,pmin,pmax);
 
 			if strcmp(sound(length(sound)),'1')==0
 				plot(xx,y+global_y,'r');
@@ -105,7 +108,7 @@ for i=1:1:num
 		end
 	end
 
-	output=fopen(['match/f0files-modified/' list(i).name],'w');
+	output=fopen(['match/f0files-modified/' regexprep(list(i).name,'lab','f0_ascii')],'w');
 	fprintf(output,'%f\n',rebuild);
 	fclose(output);
 

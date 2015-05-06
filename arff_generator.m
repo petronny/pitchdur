@@ -1,9 +1,6 @@
-function arff_genernator(window,fround,noglobal)
-if nargin<3
-	noglobal=1;
-end
+function arff_genernator(window,noglobal)
 if nargin<2
-	fround=0;
+	noglobal=1;
 end
 
 input=fopen('origin/500_sp_sy.txt','r');
@@ -15,7 +12,7 @@ labdir=regexprep(f0dir,'f0files','lab');
 list=dir([f0dir,'*.f0_ascii']);
 num=length(list);
 
-output=fopen([ 'weka/data-noglobal' noglobal+'0' '-round' fround+'0' '-window' window+'0' '.arff' ],'w');
+output=fopen([ 'weka/data-noglobal' noglobal+'0' '-window' window+'0' '.arff' ],'w');
 fprintf(output,'@RELATION data\n');
 
 for k=-window:window
@@ -27,14 +24,9 @@ fprintf(output,'@ATTRIBUTE tone%d {-1,1,2,3,4,5}\n',k);
 fprintf(output,'@ATTRIBUTE label%d {sp,a,ad,an,b,c,d,f,g,i,j,k,l,m,n,nr,ns,nt,nz,p,q,r,s,t,u,v,vd,vn,y,z}\n',k);
 fprintf(output,'@ATTRIBUTE stop%d {sp,=,-,|}\n',k);
 fprintf(output,'@ATTRIBUTE time REAL\n');
+fprintf(output,'@ATTRIBUTE pos INTEGER\n');
 
-if fround == 0
-	fprintf(output,'@ATTRIBUTE r1 REAL\n');
-	fprintf(output,'@ATTRIBUTE r2 REAL\n');
-else
-	fprintf(output,'@ATTRIBUTE r1 {-1,0,1}\n');
-	fprintf(output,'@ATTRIBUTE r2 {-1,0,1}\n');
-end
+fprintf(output,'@ATTRIBUTE r1 {0,1}\n');
 
 fprintf(output,'@ATTRIBUTE a REAL\n');
 fprintf(output,'@ATTRIBUTE b REAL\n');
@@ -68,7 +60,7 @@ for i=1:1:num
 				p=globalfit(b,left,right,'linear');
 				for k=left:right
 					if tmp(k-left+1)~=0
-						a(k)=tmp(k-left+1)-b(k-left+1);
+						a(k)=tmp(k-left+1)-polyval(p,k-left);
 					end
 				end
 			end
@@ -76,9 +68,11 @@ for i=1:1:num
 	end
 
 	data=[];
+	pos=0;
 	for j=1:length(marks)-1
 		sound=char(tones(j+1));
 		if strcmp(sound,'#')==0
+			pos=pos+1;
 			left=round(marks(j));
 			right=min(round(marks(j+1)),length(a));
 			tmp=a(left:right);
@@ -92,31 +86,20 @@ for i=1:1:num
 					ax=ax/(maxr-maxl);
 				end
 				if ax<0
-					ax=0;
+					ax=0.5;
 				end
 				if ax >1
-					ax=1;
+					ax=0.5;
 				end
-				%r1=abs(r1);
-				%r2=abs(r2);
-				if r1>0
-					r1=1;
-				else
-					r1=-1;
+				if r1<0
+					r1=0;
 				end
-				if r2>0
-					r2=1;
-				else
-					r2=-1;
-				end
-				if fround
-					r1=round(r1);
-					r2=round(r2);
-				end
-				data=[data;maxr-maxl+1 r1 r2 p min(tmp(maxl:maxr)) max(tmp(maxl:maxr)) ax];
+				data=[data;maxr-maxl+1 pos round(r1) p min(tmp(maxl:maxr)) max(tmp(maxl:maxr)) ax];
 			else
-				data=[data;maxr-maxl+1 r1 r2 p 0 0 0.5];
+				data=[data;maxr-maxl+1 pos 0 p 0 0 0.5];
 			end
+		else
+			pos=0;
 		end
 	end
 
@@ -184,17 +167,10 @@ for i=1:1:num
 		end
 		datalength=size(data);
 		datalength=datalength(2);
-		if fround == 0
-			fprintf(output,'%f,',data(j,1:datalength-1));
-			fprintf(output,'%f',data(j,datalength));
-			fprintf(output,'\n');
-		else
-			fprintf(output,'%f,',data(j,1:datalength-8));
-			fprintf(output,'%d,',data(j,datalength-7:datalength-6));
-			fprintf(output,'%f,',data(j,datalength-5:datalength-1));
-			fprintf(output,'%f',data(j,datalength));
-			fprintf(output,'\n');
-		end
+		fprintf(output,'%d,',data(j,1:3));
+		fprintf(output,'%f,',data(j,4:datalength-1));
+		fprintf(output,'%f',data(j,datalength));
+		fprintf(output,'\n');
 	end
 end
 fclose(output);

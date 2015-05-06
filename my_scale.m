@@ -3,5 +3,5 @@ if min1 ~= max1
 	ret=(a-min1)/(max1-min1);
 	ret=ret*(max2-min2)+min2;
 else
-	ret=a
+	ret=a;
 end

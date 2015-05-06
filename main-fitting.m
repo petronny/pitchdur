@@ -55,7 +55,7 @@ for i=1:1:num
 		right=min(round(marks(j+1)),length(a));
 		tmp=a(left:right);
 		x=linspace(left,right,right-left+1);
-		[p r1 r2 maxl maxr]=parafit(x,tmp);
+		[p r1 r2 maxl maxr]=parafit(x,tmp,1);
 %		if maxr-maxl+1>5
 %			[base1 base2]=baseline(x,tmp,p,0);
 %			[diff1 diff2]=basediff(ptone,tone,pbase1-base1,pbase2-base2);
@@ -75,9 +75,9 @@ for i=1:1:num
 
 	end
 
-	output=fopen(['match/f0files-modified/' list(i).name],'w');
-	fprintf(output,'%f\n',rebuild);
-	fclose(output);
+%	output=fopen(['match/f0files-modified/' list(i).name],'w');
+%	fprintf(output,'%f\n',rebuild);
+%	fclose(output);
 
 	subfix='parafit';
 	saveas(h,['figure/',subfix,'/' list(i).name(3:5)],'png');
