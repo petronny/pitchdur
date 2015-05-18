@@ -9,3 +9,6 @@ rebuild*/
 *.swp
 *.exe
 *.arff
+*.tar.gz
+questions/*.png
+questions/*/*

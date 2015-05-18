@@ -21,20 +21,21 @@ public class Main {
 		arffLoader.setFile(inputFile);
 		Instances input = arffLoader.getDataSet();
 		
-		double [][] r1_only1=r1.regression(input,"only",'1');
-		double [][] r1_only2=r1.regression(input,"only",'2');
-		double [][] r1_only3=r1.regression(input,"only",'3');
-		double [][] r1_only4=r1.regression(input,"only",'4');
-		double [][] r1_only5=r1.regression(input,"only",'5');
+		double r_only[][][];
+		r_only=new double[5][][];
+		r_only[0]=r1.regression(input,"only",'1');
+		r_only[1]=r1.regression(input,"only",'2');
+		r_only[2]=r1.regression(input,"only",'3');
+		r_only[3]=r1.regression(input,"only",'4');
+		r_only[4]=r1.regression(input,"only",'5');
 		
 		inputFile = new File("data-noglobal1-window0.arff");
 		arffLoader = new ArffLoader();
 		arffLoader.setFile(inputFile);
 		input = arffLoader.getDataSet();
-		parameters.regression(input, "only",'1', r1_only1[1]);
-		parameters.regression(input, "only",'2', r1_only2[1]);
-		parameters.regression(input, "only",'3', r1_only3[1]);
-		parameters.regression(input, "only",'4', r1_only4[1]);
-		parameters.regression(input, "only",'5', r1_only5[1]);
+		for(int i=0;i<5;i++){
+			parameters.regression(input,"linear","only",(char)('1'+i), r_only[i][0]);
+			parameters.regression(input,"quadratic","only",(char)('1'+i), r_only[i][0]);
+		}
 	}
 }

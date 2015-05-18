@@ -3,8 +3,12 @@
 [1.1](part1)  
 [1.2](part2)
 
-## A report with embed titles and pictures
+## Modeling and rebuilding F0 Trajectory with Quadratic in Mandarin
 
-### pictures
+### Aim
 
-![img1](001.png)
+1. Find a :w
+
+### Why Quadratic?
+
+Compare with Fujisaki model or PENTA model, Quadratic

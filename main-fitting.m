@@ -5,6 +5,7 @@ f0dir='match/f0files/';
 labdir=regexprep(f0dir,'f0files','lab');
 list=dir([f0dir,'*.f0_ascii']);
 num=length(list);
+data=[];
 for i=1:1:num
 
 	fprintf('%d:%s\n',i,list(i).name);
@@ -38,6 +39,7 @@ for i=1:1:num
 
 			p=globalfit(b,left,right,'exponent',1);
 			p=globalfit(b,left,right,'linear',1);
+			data=[data;p];
 
 			for k=left:right
 				if tmp(k-left+1)~=0
@@ -84,3 +86,10 @@ for i=1:1:num
 	close(h);
 
 end
+output=fopen('parameters.txt','w');
+len=size(data);
+len=len(1)
+for i=1:len
+	fprintf(output,'%f %f\n',data(i,1),data(i,2));
+end
+fclose(output);
