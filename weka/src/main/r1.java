@@ -10,27 +10,17 @@ import weka.filters.unsupervised.attribute.Remove;
 
 public class r1 {
 
-	public static double[][] regression(Instances input, String subfix, char subchar)
+	public static double[][] regression(Instances input, String filter)
 			throws Exception {
 		Instances inputData = new Instances(input);
 
-		if (subfix.equals("only")) {
-			for (int i = input.numInstances() - 1; i >= 0; i--) {
-				// it's important to iterate from last to first, because when we
-				// remove an instance, the rest shifts by one position.
-				Instance inst = inputData.instance(i);
-				if (inst.stringValue(inputData.attribute("tone0")).charAt(0) != subchar) {
-					inputData.delete(i);
-				}
-			}
-		}
-
-		if (subfix.equals("expect")) {
-			for (int i = input.numInstances() - 1; i >= 0; i--) {
-				Instance inst = inputData.instance(i);
-				if (inst.stringValue(inputData.attribute("tone0")).charAt(0) == subchar) {
-					inputData.delete(i);
-				}
+		for (int i = inputData.numInstances() - 1; i >= 0; i--) {
+			// it's important to iterate from last to first, because when we
+			// remove an instance, the rest shifts by one position.
+			Instance inst = inputData.instance(i);
+			if (!tools.haschar(filter,
+					inst.stringValue(inputData.attribute("tone0")).charAt(0))) {
+				inputData.delete(i);
 			}
 		}
 
@@ -78,14 +68,15 @@ public class r1 {
 
 		double totaldiff1 = 0;
 		for (int i = 0; i < inputData.numInstances(); i++) {
-			parameters[1][i]=Math.round(parameters[1][i]);
+			parameters[1][i] = Math.round(parameters[1][i]);
 			double diff = Math.abs(parameters[0][i] - parameters[1][i]);
 			totaldiff1 += diff;
 		}
-		System.out.printf("r1-%s%c\t: %f\n", subfix,subchar,totaldiff1 / inputData.numInstances());
+		System.out.printf("r1-%s\t: %f\n", filter,
+				totaldiff1 / inputData.numInstances());
 
 		// Output
-		FileWriter output = new FileWriter(String.format("r1-%s%c.txt", subfix,subchar));
+		FileWriter output = new FileWriter(String.format("r1-%s.txt", filter));
 		for (int i = 0; i < inputData.numInstances(); i++) {
 			// output.write(String.format("%s ", tones[i]));
 			output.write(String.format("%f ", parameters[0][i]));
