@@ -10,13 +10,39 @@ import weka.filters.unsupervised.attribute.Remove;
 
 public class parameters {
 
-	public static void rebuild(Instances input, REPTree[][] cfs) throws Exception {
+	public static void rebuild(Instances input, REPTree[][] cfs, double[][][] r)
+			throws Exception {
+		int[] count = new int[5];
 		for (int i = 0; i < input.numInstances(); i++) {
-//			double result = input.instance(i).classValue();
-//			double result_test = cfs[0][1].classifyInstance(input.instance(i));
-			// test.instance(i).setValue(inputData.attribute("r1"),
-			// r1_new[count]);
-			// test.instance(i).setValue(inputData.attribute("r2"),r2_new[count]);
+			Instance inst = input.instance(i);
+			for (int selectedAttr = 0; selectedAttr < Main.numOfTargetAttr; selectedAttr++) {
+				int tone = inst.stringValue(input.attribute("r1")).charAt(0) - '1';
+
+				if (r[tone][count[tone]][1] == 0) {
+					if (selectedAttr == 0)
+						selectedAttr++;
+					if (selectedAttr == Main.numOfTargetAttr - 1)
+						continue;
+				}
+
+				// Remove not needed attribute
+				int cIdx = inst.numAttributes() - 1;
+				int[] removeList = new int[Main.numOfTargetAttr - 1];
+				for (int j = 0; j < Main.numOfTargetAttr - 1; j++)
+					removeList[j] = cIdx - Main.numOfTargetAttr + 1
+							+ (selectedAttr + j + 1) % Main.numOfTargetAttr;
+				for (int j=0;j<Main.numOfTargetAttr-1;j++)
+					inst.deleteAttributeAt(removeList[j]);
+				cIdx = inst.numAttributes() - 1;
+//				inst.setClassIndex(cIdx);
+				inst.classValue();
+				// double result = input.instance(i).classValue();
+				// double result_test =
+				// cfs[0][1].classifyInstance(input.instance(i));
+				// test.instance(i).setValue(inputData.attribute("r1"),
+				// r1_new[count]);
+				// test.instance(i).setValue(inputData.attribute("r2"),r2_new[count]);
+			}
 		}
 	}
 
@@ -129,7 +155,8 @@ public class parameters {
 		System.out.printf("\n");
 
 		// Output
-		FileWriter output = new FileWriter(String.format("parameters-%s-%s.txt", regressionType, filter));
+		FileWriter output = new FileWriter(String.format(
+				"parameters-%s-%s.txt", regressionType, filter));
 		for (int i = 0; i < inputData.numInstances(); i++) {
 			for (int j = 0; j < Main.numOfTargetAttr * 2 + 1; j++)
 				output.write(String.format("%f ", parameters[i][j]));

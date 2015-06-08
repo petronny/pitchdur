@@ -34,7 +34,7 @@ public class Main {
 			cfs[i][1] = parameters.regression(input, "quadratic",
 					String.format("%d", 1 + i));
 		for (int i = 0; i < 5; i++) {
-			parameters.rebuild(input,cfs);
+			parameters.rebuild(input,cfs,r);
 		}
 	}
 }
