@@ -39,7 +39,7 @@ for i=1:1:num
 
 			p=globalfit(b,left,right,'exponent',1);
 			p=globalfit(b,left,right,'linear',1);
-			data=[data;p];
+			data=[data;p length(b)];
 
 			for k=left:right
 				if tmp(k-left+1)~=0
@@ -86,10 +86,10 @@ for i=1:1:num
 	close(h);
 
 end
-output=fopen('parameters.txt','w');
+output=fopen('p-statements.txt','w');
 len=size(data);
 len=len(1)
 for i=1:len
-	fprintf(output,'%f %f\n',data(i,1),data(i,2));
+	fprintf(output,'%f %f %d\n',data(i,1),data(i,2),data(i,3));
 end
 fclose(output);

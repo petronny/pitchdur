@@ -4,6 +4,11 @@ Fs=200;
 d = fdesign.lowpass('fp,fst,ap,ast',1e-12,0.5,1e-12,3,Fs);
 Hd = design(d,'butter');
 data=[];
+
+input=fopen('refitting.txt','r');
+half_list=fscanf(input,'%d',[2 inf])';
+fclose(input);
+
 for i=1:1:7
 	mydir=sprintf('Type%d/',i);
 	list=dir([mydir '*.dur']);
@@ -48,6 +53,12 @@ for i=1:1:7
 			end
 			left=right;
 		end
+
+		if ismember([i j],half_list,'rows') == 1
+			globaly=globaly(length(globaly)/2:length(globaly));
+			globalx=globalx(length(globalx)/2:length(globalx));
+		end
+
 		base=mean(globaly);
 		ptime=10;
 		x0=[0 globalx+ptime-globalx(1)];
@@ -58,22 +69,33 @@ for i=1:1:7
 		b = filter(Hd,y)+base;
 		b(x<ptime)=[];
 		x(x<ptime)=[];
-		x=x+globalx(1)-ptime;
-		plot(x,b,'b');
 		p=polyfit(x,b,1);
-		y=polyval(p,x);
-		plot(x,y,'k');
-		data=[data;p i];
 
+		y=polyval(p,x);
+		t=(right-globalx(1))/10;
+		p2=[-0.000131*t, t*0.0159+158.4314];
+		y2=polyval(p2,x);
+
+		x=x+globalx(1)-ptime;
+		data=[data;p t i];
+
+		plot(x,b,'b');
+		plot(x,y,'k');
+		plot(x,y2,'g');
+
+
+		if ismember([i j],half_list,'rows') == 1
+			saveas(h,['a>0/',mydir list(j).name(1:4)],'png');
+		end
 		saveas(h,['figure/',mydir list(j).name(1:4)],'png');
 		close(h);
 	end
 end
 
-output=fopen('p-questions.txt','w');
-len=size(data);
-len=len(1);
-for i=1:len
-	fprintf(output,'%f %f %d\n',data(i,1),data(i,2),data(i,3));
-end
-fclose(output);
+%output=fopen('p-questions.txt','w');
+%len=size(data);
+%len=len(1);
+%for i=1:len
+	%fprintf(output,'%f %f %d %d\n',data(i,1),data(i,2),data(i,3),data(i,4));
+%end
+%fclose(output);

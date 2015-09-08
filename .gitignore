@@ -10,5 +10,6 @@ rebuild*/
 *.exe
 *.arff
 *.tar.gz
+*.7z
 questions/*.png
 questions/*/*
